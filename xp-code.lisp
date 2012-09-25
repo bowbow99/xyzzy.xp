@@ -1988,14 +1988,14 @@
 	   (colon-pos (position #\: *string* :start whole-name-start :end (1- end)))
 	   (pkg (find-package
 		  (if colon-pos
-		      (string-upcase (subseq *string* whole-name-start colon-pos))
+                      (subseq *string* whole-name-start colon-pos)
 		      *default-package*)))
 	   (name-start (cond ((null colon-pos) whole-name-start)
 			     ((and (< colon-pos (1- end))
 				   (char= #\: (aref *string* (1+ colon-pos))))
 			      (+ colon-pos 2))
 			     (t (1+ colon-pos))))
-	   (fn (intern (string-upcase (subseq *string* name-start (1- end))) pkg)))
+           (fn (intern (subseq *string* name-start (1- end)) pkg)))
       (if (not (find-if #'consp params))
 	  `(funcall (symbol-function ',fn) xp ,(get-arg) ,colon ,atsign ,@ params)
 	  (let ((vars (mapcar #'(lambda (arg)
