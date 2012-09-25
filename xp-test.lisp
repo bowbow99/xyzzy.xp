@@ -2000,7 +2000,7 @@ o\"")
   ((prints '|4a|))
   ((prints 'A%))
   ((prints '%))
-  ((prints '#*10101))
+  ;((prints '#*10101))
   ((prints '#2A((12 3456 789) (22 456 78)) (*print-array* nil)))
 
 ;Tests of circularity printing.
@@ -2176,22 +2176,22 @@ eee")
  #-franz-inc
   ((progn (setq xp::*free-xps* nil)
 	  (plet 400 0 (xp::format nil (formatter "~@<foo ~300ia~:@_b~305i~:@_c~:>"))))
-   #,(lisp:format nil "foo a~%~300@Tb~%~305@Tc"))
+   #.(lisp:format nil "foo a~%~300@Tb~%~305@Tc"))
 
  #-franz-inc
   ((progn (setq xp::*free-xps* nil)
 	  (plet 400 0
 	    (xp::format nil (formatter "~@<foo ~250ia~:@_~@<0123456~@;b~@<++++~@;c~:@_d~:>~:>~:>"))))
-   #,(lisp:format nil "foo a~%~250@T0123456b++++c~%~250@T0123456 ++++d"))
+   #.(lisp:format nil "foo a~%~250@T0123456b++++c~%~250@T0123456 ++++d"))
 
  #-franz-inc
   ((progn (setq xp::*free-xps* nil)
 	  (plet 400 0 (xp::format nil (formatter "~@<~250@Ta~_~10@Tb~5@Tc~:>"))))
-   #,(lisp:format nil "~250@Ta~10@Tb~5@Tc"))
+   #.(lisp:format nil "~250@Ta~10@Tb~5@Tc"))
  #-franz-inc
   ((progn (setq xp::*free-xps* nil)
 	  (plet 200 0 (xp::format nil (formatter "~@<~250@Ta~10@Tb~5@Tc~:>"))))
-   #,(lisp:format nil "~250@Ta~10@Tb~5@Tc"))
+   #.(lisp:format nil "~250@Ta~10@Tb~5@Tc"))
 
   ((progn (setq xp::*free-xps* nil)
 	  (plet 85 0 (xp::format nil (formatter "~W") 
