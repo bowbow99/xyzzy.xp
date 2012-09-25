@@ -1773,7 +1773,7 @@
 (defmacro formatter (string)
   `(function
     (lambda (s &rest args)
-      (formatter-in-package ,string "USER"))))
+      (formatter-in-package ,string :user))))
 
 (defun formatter-fn (*string* *default-package*)
   (or (catch :format-compilation-error
