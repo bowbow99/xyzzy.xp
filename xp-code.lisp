@@ -1651,6 +1651,7 @@
 	   (macrolet ((pprint-pop () `(pprint-pop+ ,',args ,',var))
 		      (pprint-exit-if-list-exhausted ()
 			`(if (null ,',args) (return-from logical-block nil))))
+             nil ; workaround
 	     ,@ body)
 	   (end-block ,var ,suffix))))))
 
