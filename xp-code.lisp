@@ -815,14 +815,15 @@
 ;Assumes is only called when char-mode is non-nil
 (defun handle-char-mode (xp char)
   (case (char-mode xp)
-    (:CAP0 (cond ((not (alphanumericp char)) char)
-		 (t (setf (char-mode xp) :DOWN) (char-upcase char))))
-    (:CAP1 (cond ((not (alphanumericp char)) char)
-		 (t (setf (char-mode xp) :CAPW) (char-upcase char))))
-    (:CAPW (cond ((alphanumericp char) (char-downcase char))
-		 (t (setf (char-mode xp) :CAP1) char)))
-    (:UP (char-upcase char))
-    (t (char-downcase char)))) ;:DOWN
+    (:cap0 (cond ((not (alphanumericp char)) char)
+		 (t (setf (char-mode xp) :down) (char-upcase char))))
+    (:cap1 (cond ((not (alphanumericp char)) char)
+		 (t (setf (char-mode xp) :capW) (char-upcase char))))
+    (:capW (cond ((alphanumericp char) (char-downcase char))
+		 (t (setf (char-mode xp) :cap1) char)))
+    (:up   (char-upcase char))
+    (:down (char-downcase char))
+    (t (error "Invalid case-mode = ~S" (char-mode xp)))))
 
 ;All characters output are passed through the handler above.  However, it must
 ;be noted that on-each-line prefixes are only processed in the context of the
@@ -2199,10 +2200,10 @@
   (multiple-value-bind (colon atsign) (parse-params start nil)
     (setq start (1+ (params-end start)))
     (setq end (directive-start end))
-    `(progn (push-char-mode xp ,(cond ((and colon atsign) :UP)
-				      (colon :CAP1)
-				      (atsign :CAP0)
-				      (t :DOWN)))
+    `(progn (push-char-mode xp ,(cond ((and colon atsign) :up)
+				      (colon :cap1)
+				      (atsign :cap0)
+				      (t :down)))
 	    ,@(compile-format start end)
 	    (pop-char-mode xp))))
 
