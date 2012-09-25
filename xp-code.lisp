@@ -464,70 +464,71 @@
   CHAR-MODE ;;NIL :UP :DOWN :CAP0 :CAP1 :CAPW
   CHAR-MODE-COUNTER ;depth of nesting of ~(...~)
   DEPTH-IN-BLOCKS
-   ;;Number of logical blocks at QRIGHT that are started but not ended.
+  ;;Number of logical blocks at QRIGHT that are started but not ended.
   (BLOCK-STACK (make-array #.block-stack-min-size))
   BLOCK-STACK-PTR
-   ;;This stack is pushed and popped in accordance with the way blocks are 
-   ;;nested at the moment they are entered into the queue.  It contains the 
-   ;;following block specific value.
-   ;;SECTION-START total position where the section (see AIM-1102)
-   ;;that is rightmost in the queue started.
+  ;;This stack is pushed and popped in accordance with the way blocks are
+  ;;nested at the moment they are entered into the queue.  It contains the
+  ;;following block specific value.
+  ;;SECTION-START total position where the section (see AIM-1102)
+  ;;that is rightmost in the queue started.
   (BUFFER (make-array #.buffer-min-size :element-type
-		      #-symbolics 'string-char #+symbolics 'character))
-   CHARPOS
+                      #-symbolics 'string-char #+symbolics 'character))
+  CHARPOS
   BUFFER-PTR
   BUFFER-OFFSET
-   ;;This is a vector of characters (eg a string) that builds up the
-   ;;line images that will be printed out.  BUFFER-PTR is the
-   ;;buffer position where the next character should be inserted in
-   ;;the string.  CHARPOS is the output character position of the
-   ;;first character in the buffer (non-zero only if a partial line
-   ;;has been output).  BUFFER-OFFSET is used in computing total lengths.
-   ;;It is changed to reflect all shifting and insertion of prefixes so that
-   ;;total length computes things as they would be if they were 
-   ;;all on one line.  Positions are kept three different ways
-   ;; Buffer position (eg BUFFER-PTR)
-   ;; Line position (eg (+ BUFFER-PTR CHARPOS)).  Indentations are stored in this form.
-   ;; Total position if all on one line (eg (+ BUFFER-PTR BUFFER-OFFSET))
-   ;;  Positions are stored in this form.
+  ;;This is a vector of characters (eg a string) that builds up the
+  ;;line images that will be printed out.  BUFFER-PTR is the
+  ;;buffer position where the next character should be inserted in
+  ;;the string.  CHARPOS is the output character position of the
+  ;;first character in the buffer (non-zero only if a partial line
+  ;;has been output).  BUFFER-OFFSET is used in computing total lengths.
+  ;;It is changed to reflect all shifting and insertion of prefixes so that
+  ;;total length computes things as they would be if they were
+  ;;all on one line.  Positions are kept three different ways
+  ;; Buffer position (eg BUFFER-PTR)
+  ;; Line position (eg (+ BUFFER-PTR CHARPOS)).  Indentations are stored in this form.
+  ;; Total position if all on one line (eg (+ BUFFER-PTR BUFFER-OFFSET))
+  ;;  Positions are stored in this form.
   (QUEUE (make-array #.queue-min-size))
   QLEFT
   QRIGHT
-   ;;This holds a queue of action descriptors.  QLEFT and QRIGHT
-   ;;point to the next entry to dequeue and the last entry enqueued
-   ;;respectively.  The queue is empty when
-   ;;(> QLEFT QRIGHT).  The queue entries have several parts:
-   ;;QTYPE one of :NEWLINE/:IND/:START-BLOCK/:END-BLOCK
-   ;;QKIND :LINEAR/:MISER/:FILL/:MANDATORY or :UNCONDITIONAL/:FRESH
-   ;; or :BLOCK/:CURRENT
-   ;;QPOS total position corresponding to this entry
-   ;;QDEPTH depth in blocks of this entry.
-   ;;QEND offset to entry marking end of section this entry starts. (NIL until known.)
-   ;; Only :start-block and non-literal :newline entries can start sections.
-   ;;QOFFSET offset to :END-BLOCK for :START-BLOCK (NIL until known).
-   ;;QARG for :IND indentation delta
-   ;;     for :START-BLOCK suffix in the block if any.
-   ;;                      or if per-line-prefix then cons of suffix and
-   ;;                      per-line-prefix.
-   ;;     for :END-BLOCK suffix for the block if any.
+  ;;This holds a queue of action descriptors.  QLEFT and QRIGHT
+  ;;point to the next entry to dequeue and the last entry enqueued
+  ;;respectively.  The queue is empty when
+  ;;(> QLEFT QRIGHT).  The queue entries have several parts:
+  ;;QTYPE one of :NEWLINE/:IND/:START-BLOCK/:END-BLOCK
+  ;;QKIND :LINEAR/:MISER/:FILL/:MANDATORY or :UNCONDITIONAL/:FRESH
+  ;; or :BLOCK/:CURRENT
+  ;;QPOS total position corresponding to this entry
+  ;;QDEPTH depth in blocks of this entry.
+  ;;QEND offset to entry marking end of section this entry starts. (NIL until known.)
+  ;; Only :start-block and non-literal :newline entries can start sections.
+  ;;QOFFSET offset to :END-BLOCK for :START-BLOCK (NIL until known).
+  ;;QARG for :IND indentation delta
+  ;;     for :START-BLOCK suffix in the block if any.
+  ;;                      or if per-line-prefix then cons of suffix and
+  ;;                      per-line-prefix.
+  ;;     for :END-BLOCK suffix for the block if any.
   (PREFIX (make-array #.buffer-min-size :element-type
-		      #-symbolics 'string-char #+symbolics 'character))
-   ;;this stores the prefix that should be used at the start of the line
+                      #-symbolics 'string-char #+symbolics 'character))
+  ;;this stores the prefix that should be used at the start of the line
   (PREFIX-STACK (make-array #.prefix-stack-min-size))
   PREFIX-STACK-PTR
-   ;;This stack is pushed and popped in accordance with the way blocks 
-   ;;are nested at the moment things are taken off the queue and printed.
-   ;;It contains the following block specific values.
-   ;;PREFIX-PTR current length of PREFIX.
-   ;;SUFFIX-PTR current length of pending suffix
-   ;;NON-BLANK-PREFIX-PTR current length of non-blank prefix.
-   ;;INITIAL-PREFIX-PTR prefix-ptr at the start of this block.
-   ;;SECTION-START-LINE line-no value at last non-literal break at this level.
+  ;;This stack is pushed and popped in accordance with the way blocks
+  ;;are nested at the moment things are taken off the queue and printed.
+  ;;It contains the following block specific values.
+  ;;PREFIX-PTR current length of PREFIX.
+  ;;SUFFIX-PTR current length of pending suffix
+  ;;NON-BLANK-PREFIX-PTR current length of non-blank prefix.
+  ;;INITIAL-PREFIX-PTR prefix-ptr at the start of this block.
+  ;;SECTION-START-LINE line-no value at last non-literal break at this level.
   (SUFFIX (make-array #.buffer-min-size :element-type
-		      #-symbolics 'string-char #+symbolics 'character)))
-   ;;this stores the suffixes that have to be printed to close of the current
-   ;;open blocks.  For convenient in popping, the whole suffix
-   ;;is stored in reverse order.
+                      #-symbolics 'string-char #+symbolics 'character))
+  ;;this stores the suffixes that have to be printed to close of the current
+  ;;open blocks.  For convenient in popping, the whole suffix
+  ;;is stored in reverse order.
+  )
  
 
 (defmacro LP<-BP (xp &optional (ptr nil))
