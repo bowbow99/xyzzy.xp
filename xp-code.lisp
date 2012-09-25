@@ -68,7 +68,9 @@
 
 (shadow '(write print prin1 princ pprint format write-to-string princ-to-string
 	  prin1-to-string write-line write-string write-char terpri fresh-line
-	  defstruct finish-output force-output clear-output))
+	  defstruct finish-output
+          ;force-output clear-output
+          ))
 
 (export '(formatter copy-pprint-dispatch pprint-dispatch
 	  set-pprint-dispatch pprint-fill pprint-linear pprint-tabular
@@ -82,7 +84,9 @@
 (defvar *xp-printing-functions*
 	'(write print prin1 princ pprint format write-to-string princ-to-string
 	  prin1-to-string write-line write-string write-char terpri fresh-line
-	  defstruct finish-output force-output clear-output)
+	  defstruct finish-output
+          ;force-output clear-output
+          )
   "printing functions redefined by xp.")
 
 ;; [CLHS: Function WRITE-STRING, WRITE-LINE]: http://www.lispworks.com/documentation/HyperSpec/Body/f_wr_stg.htm
@@ -1436,6 +1440,12 @@
   (lisp:finish-output stream)
   nil)
 
+;; NOTE: `force-output` and `clear-output` are missing
+;; Maybe just use `finish-output` do the job,.. maybe not..
+;;
+;;   [CLHS: Function FINISH-OUTPUT, FORCE-OUTPUT, CLEAR-OUTPUT]: http://www.lispworks.com/documentation/HyperSpec/Body/f_finish.htm
+
+#-xyzzy
 (defun force-output (&optional (stream *standard-output*))
   (setq stream (decode-stream-arg stream))
   (when (xp-structure-p stream)
@@ -1444,6 +1454,7 @@
   (lisp:force-output stream)
   nil)
 
+#-xyzzy
 (defun clear-output (&optional (stream *standard-output*))
   (setq stream (decode-stream-arg stream))
   (when (xp-structure-p stream)
