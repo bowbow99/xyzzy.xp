@@ -465,7 +465,8 @@
   CHAR-MODE-COUNTER ;depth of nesting of ~(...~)
   DEPTH-IN-BLOCKS
    ;;Number of logical blocks at QRIGHT that are started but not ended.
-  (BLOCK-STACK (make-array #.block-stack-min-size)) BLOCK-STACK-PTR
+  (BLOCK-STACK (make-array #.block-stack-min-size))
+  BLOCK-STACK-PTR
    ;;This stack is pushed and popped in accordance with the way blocks are 
    ;;nested at the moment they are entered into the queue.  It contains the 
    ;;following block specific value.
@@ -473,7 +474,9 @@
    ;;that is rightmost in the queue started.
   (BUFFER (make-array #.buffer-min-size :element-type
 		      #-symbolics 'string-char #+symbolics 'character))
-   CHARPOS BUFFER-PTR BUFFER-OFFSET
+   CHARPOS
+  BUFFER-PTR
+  BUFFER-OFFSET
    ;;This is a vector of characters (eg a string) that builds up the
    ;;line images that will be printed out.  BUFFER-PTR is the
    ;;buffer position where the next character should be inserted in
@@ -487,7 +490,9 @@
    ;; Line position (eg (+ BUFFER-PTR CHARPOS)).  Indentations are stored in this form.
    ;; Total position if all on one line (eg (+ BUFFER-PTR BUFFER-OFFSET))
    ;;  Positions are stored in this form.
-  (QUEUE (make-array #.queue-min-size)) QLEFT QRIGHT
+  (QUEUE (make-array #.queue-min-size))
+  QLEFT
+  QRIGHT
    ;;This holds a queue of action descriptors.  QLEFT and QRIGHT
    ;;point to the next entry to dequeue and the last entry enqueued
    ;;respectively.  The queue is empty when
@@ -508,7 +513,8 @@
   (PREFIX (make-array #.buffer-min-size :element-type
 		      #-symbolics 'string-char #+symbolics 'character))
    ;;this stores the prefix that should be used at the start of the line
-  (PREFIX-STACK (make-array #.prefix-stack-min-size)) PREFIX-STACK-PTR
+  (PREFIX-STACK (make-array #.prefix-stack-min-size))
+  PREFIX-STACK-PTR
    ;;This stack is pushed and popped in accordance with the way blocks 
    ;;are nested at the moment things are taken off the queue and printed.
    ;;It contains the following block specific values.
