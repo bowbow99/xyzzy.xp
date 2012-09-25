@@ -220,8 +220,8 @@
   (when (not remove)
     (when macro
       (set-dispatch-macro-character #\# #\" #'format-string-reader))
-    (when (not (eq package (find-package "XP")))
-      (use-package "XP" package)
+    (when (not (eq package (find-package :xp)))
+      (use-package :xp package)
       (when shadow (shadowing-import *xp-printing-functions* package)))
   #+symbolics 
     (progn
@@ -229,8 +229,8 @@
 	(setq original-trace-print (symbol-function 'si:trace-print)))
       (setf (symbol-function 'si:trace-print) (symbol-function 'trace-print))
       (zl:setq-standard-value scl:*print-pretty-printer* 'pretty-printer)))
-  (when (and remove (member (find-package "XP") (package-use-list package)))
-    (unuse-package "XP" package)
+  (when (and remove (member (find-package :xp) (package-use-list package)))
+    (unuse-package :xp package)
     (dolist (sym (intersection *xp-printing-functions*
 			       (package-shadowing-symbols package)))
       (unintern sym package))
@@ -545,11 +545,11 @@
   (let* ((min-size
 	   (symbol-value
 	     (intern (concatenate 'string (string vect) "-MIN-SIZE")
-		     (find-package "XP"))))
+		     (find-package :xp))))
 	 (entry-size
 	   (symbol-value
 	     (intern (concatenate 'string (string vect) "-ENTRY-SIZE")
-		     (find-package "XP")))))
+		     (find-package :xp)))))
     `(when (and (> ,ptr ,(- min-size entry-size)) ;seldom happens
 		(> ,ptr (- (length (,vect ,xp)) ,entry-size)))
        (let* ((old (,vect ,xp))
@@ -1437,7 +1437,7 @@
 		     "PRINT-" (string (package-name
 					(symbol-package struct-name)))
 		     ":" (string struct-name))
-		   (find-package "XP"))))
+		   (find-package :xp))))
     (cond (printer
 	   `(eval-when (eval load compile)
 	      (lisp:defstruct ,name ,@ body)
@@ -1569,7 +1569,7 @@
 ;command.  This includes the matching end command for paired commands.
 
 (defmacro def-format-handler (char args &body body)
-  (let ((name (intern (lisp:format nil "FORMAT-~A" char) (find-package "XP"))))
+  (let ((name (intern (lisp:format nil "FORMAT-~A" char) (find-package :xp))))
     `(eval-when (eval load compile)
        (defun ,name ,args ,@ body)
        (setf (gethash (char-upcase ,char) *fn-table*) (function ,name))
