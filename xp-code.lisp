@@ -105,6 +105,16 @@
       (%write-string string stream :start start :end end)
     (terpri)))
 
+;; missing standard print control variables
+
+(defvar *print-array* nil)
+(defvar *print-case* :upcase) ;wtf
+(defvar *print-shared* nil)
+(defvar *print-gensym* t)
+
+(export '(*print-array* *print-case* *print-shared* *print-gensym*))
+
+
 ;must do the following in common lisps not supporting *print-shared*
 
 (defvar *print-shared* nil)
