@@ -149,8 +149,8 @@
 	 (*PRINT-SHARED* nil)
 	 (*PRINT-GENSYM* t)
 	 (*PRINT-LEVEL* 100)
-	 (*PRINT-LENGTH* NIL)
-	 (*PRINT-LINES* NIL))
+	 (*PRINT-LENGTH* nil)
+	 (*PRINT-LINES* nil))
      .,body))
 
 ;used to test cases where xp defaults to ordinary non-pretty printing
