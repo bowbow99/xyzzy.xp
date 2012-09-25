@@ -152,14 +152,30 @@
 
 (export '(*print-array* *print-case* *print-shared* *print-gensym*))
 
+
+;;;; bug workarounds
+
+(eval-when (:execute :compile-toplevel :load-toplevel)
+  (shadow '(type-of
+            let*
+            )))
+
 ;; type-of for structure
-
-(shadow 'type-of)
-
 (defun type-of (object)
   (if (si:*structurep object)
     (si:*structure-definition-name (si:*structure-definition object))
     (lisp:type-of object)))
+
+;; to avoid `let*` and special variable issue
+(eval-when (:execute :compile-toplevel :load-toplevel)
+  (defmacro let* (bindings &body body)
+    (if (null (cdr bindings))
+      `(let (,(car bindings)) ,@body)
+      `(let (,(car bindings))
+         (let* (,@(cdr bindings)) ,@body)))))
+
+(setf (get 'let* 'ed:lisp-indent-hook) 1
+      (get 'let* 'ed::lisp-indent-flet) t)
 
 
 ;must do the following in common lisps not supporting *print-shared*
