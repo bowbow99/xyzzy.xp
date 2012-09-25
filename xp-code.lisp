@@ -1,6 +1,13 @@
 ;-*-syntax:COMMON-LISP;Package:(XP :use "COMMON-LISP" :colon-mode :external)-*-
 
+#-xyzzy
 (in-package "XP" :use '("LISP"))
+
+#+xyzzy
+(defpackage :xp
+  (:use :lisp))
+
+(in-package :xp)
 
 ;This is the November, 26 1991 version of
 ;Richard C. Waters' XP pretty printer.
