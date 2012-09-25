@@ -575,11 +575,11 @@
 (defmacro check-size (xp vect ptr)
   (let* ((min-size
 	   (symbol-value
-	     (intern (concatenate 'string (string vect) "-MIN-SIZE")
+	     (intern (concatenate 'string (string vect) "-min-size")
 		     (find-package :xp))))
 	 (entry-size
 	   (symbol-value
-	     (intern (concatenate 'string (string vect) "-ENTRY-SIZE")
+	     (intern (concatenate 'string (string vect) "-entry-size")
 		     (find-package :xp)))))
     `(when (and (> ,ptr ,(- min-size entry-size)) ;seldom happens
 		(> ,ptr (- (length (,vect ,xp)) ,entry-size)))
@@ -1472,7 +1472,7 @@
 	 (printer (cadr (safe-assoc :print-function name)))
 	 (xp-print-fn
 	   (intern (concatenate 'string
-		     "PRINT-" (string (package-name
+		     "print-" (string (package-name
 					(symbol-package struct-name)))
 		     ":" (string struct-name))
 		   (find-package :xp))))
@@ -1607,7 +1607,7 @@
 ;command.  This includes the matching end command for paired commands.
 
 (defmacro def-format-handler (char args &body body)
-  (let ((name (intern (lisp:format nil "FORMAT-~A" char) (find-package :xp))))
+  (let ((name (intern (lisp:format nil "format-~A" char) (find-package :xp))))
     `(eval-when (eval load compile)
        (defun ,name ,args ,@ body)
        (setf (gethash (char-upcase ,char) *fn-table*) (function ,name))
