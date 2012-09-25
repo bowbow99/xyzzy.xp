@@ -458,7 +458,7 @@
 
 (lisp:defstruct (xp-structure
                  (:conc-name nil)
-                 (:print-function describe-xp))
+                 #-xyzzy (:print-function describe-xp))
   (BASE-STREAM nil) ;;The stream io eventually goes to.
   LINEL ;;The line length to use for formatting.
   LINE-LIMIT ;;If non-NIL the max number of lines to print.
