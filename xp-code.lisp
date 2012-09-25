@@ -66,20 +66,22 @@
 
 (provide "XP")
 
-(shadow '(write print prin1 princ pprint format write-to-string princ-to-string
-	  prin1-to-string write-line write-string write-char terpri fresh-line
-	  defstruct finish-output
-          ;force-output clear-output
-          ))
+(eval-when (:execute :compile-toplevel :load-toplevel)
 
-(export '(formatter copy-pprint-dispatch pprint-dispatch
-	  set-pprint-dispatch pprint-fill pprint-linear pprint-tabular
-	  pprint-logical-block pprint-pop pprint-exit-if-list-exhausted
-	  pprint-newline pprint-indent pprint-tab 
-	  *print-pprint-dispatch* *print-right-margin* *default-right-margin*
-	  *print-miser-width* *print-lines*
-	  *last-abbreviated-printing*
-	  #+symbolics pp))
+  (shadow '(write print prin1 princ pprint format write-to-string princ-to-string
+            prin1-to-string write-line write-string write-char terpri fresh-line
+            defstruct finish-output
+            ;force-output clear-output
+            ))
+
+  (export '(formatter copy-pprint-dispatch pprint-dispatch
+            set-pprint-dispatch pprint-fill pprint-linear pprint-tabular
+            pprint-logical-block pprint-pop pprint-exit-if-list-exhausted
+            pprint-newline pprint-indent pprint-tab
+            *print-pprint-dispatch* *print-right-margin* *default-right-margin*
+            *print-miser-width* *print-lines*
+            *last-abbreviated-printing*
+            #+symbolics pp)))
 
 (defvar *xp-printing-functions*
 	'(write print prin1 princ pprint format write-to-string princ-to-string
@@ -1502,6 +1504,11 @@
 ;note we are assuming that if a structure is defined using xp::defstruct,
 ;then its print-function (if any) will be defined using xp::print etc.
 
+(eval-when (:execute :compile-toplevel :load-toplevel)
+  (defun safe-assoc (item list)
+    (do ((l list (cdr l))) ((not (consp l)) nil)
+      (if (and (consp (car l)) (eq (caar l) item)) (return (car l))))))
+
 (defmacro defstruct (name &body body)
   (let* ((struct-name (if (consp name) (car name) name))
 	 (printer (cadr (safe-assoc :print-function name)))
@@ -1543,9 +1550,6 @@
 		(setf (get ',struct-name 'structure-printer) :none)
 		(lisp:defstruct ,name ,@ body))))))
 
-(defun safe-assoc (item list)
-  (do ((l list (cdr l))) ((not (consp l)) nil)
-    (if (and (consp (car l)) (eq (caar l) item)) (return (car l)))))
 
 ;           ---- FUNCTIONAL INTERFACE TO DYNAMIC FORMATTING ----
 
