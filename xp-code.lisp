@@ -104,7 +104,7 @@
 	#'(lambda (&optional stream) (declare (ignore stream)) nil)
   "funcalling this redoes the last xp printing that was abbreviated.")
 
-(defvar *ipd* nil ;see initialization at end of file.
+(defvar *IPD* nil ;see initialization at end of file.
   "initial print dispatch table.")
 (defvar *current-level* 0
   "current depth in logical blocks.")
