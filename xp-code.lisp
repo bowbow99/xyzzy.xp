@@ -1971,12 +1971,12 @@
 (def-format-handler #\A (start end)
   (if (not (= end (1+ start))) (simple-directive start end)
       `(let ((*print-escape* nil))
-	 (write+ ,(get-arg) XP))))
+	 (write+ ,(get-arg) xp))))
 
 (def-format-handler #\S (start end)
   (if (not (= end (1+ start))) (simple-directive start end)
       `(let ((*print-escape* t))
-	 (write+ ,(get-arg) XP))))
+	 (write+ ,(get-arg) xp))))
 
 ;The basic Format directives "DBOXRCFEG$".  The key thing about all of
 ;these directives is that they just get a single arg and print a chunk of
@@ -2022,7 +2022,7 @@
   (let ((arg (if colon `(car (backup-in-list 1 ,(initial) ,(args))) (get-arg))))
     (if atsign
 	`(if (not (eql ,arg 1)) (write-string++ "ies" xp 0 3) (write-char++ #\y xp))
-	`(if (not (eql ,arg 1)) (write-char++ #\s XP))))))
+	`(if (not (eql ,arg 1)) (write-char++ #\s xp))))))
 
 (def-format-handler #\% (start end) (declare (ignore end))
   (multiple-newlines start :unconditional))
@@ -2253,20 +2253,20 @@
     `(pprint-newline+ ,(cond ((and colon atsign) :mandatory)
 			     (colon :fill)
 			     (atsign :miser)
-			     (t :linear)) XP)))
+			     (t :linear)) xp)))
 
 (def-format-handler #\I (start end) (declare (ignore end))
   (multiple-value-bind (colon atsign params)
       (parse-params start '(0) :noatsign t)
       (declare (ignore atsign))
-    `(pprint-indent+ ,(if colon :current :block) ,(car params) XP)))
+    `(pprint-indent+ ,(if colon :current :block) ,(car params) xp)))
 
 (def-format-handler #\W (start end) (declare (ignore end))
   (multiple-value-bind (colon atsign) (parse-params start nil)
-    (cond ((not (or colon atsign)) `(write+ ,(get-arg) XP))
+    (cond ((not (or colon atsign)) `(write+ ,(get-arg) xp))
 	  (t `(let (,@(if colon '((*print-pretty* t)))
 		    ,@(if atsign '((*print-level* nil) (*print-length* nil))))
-		(write+ ,(get-arg) XP))))))
+		(write+ ,(get-arg) xp))))))
 
 (defun handle-logical-block (start end)
   (multiple-value-bind (colon atsign) (parse-params start nil)
@@ -2304,7 +2304,7 @@
 (defun check-block-abbreviation (xp args circle-check?)
   (cond ((not (listp args)) (write+ args xp) t)
 	((and *print-level* (> *current-level* *print-level*))
-	 (write-char++ #\# XP) (setq *abbreviation-happened* t) t)
+	 (write-char++ #\# xp) (setq *abbreviation-happened* t) t)
 	((and *circularity-hash-table* circle-check?
 	      (eq (circularity-process xp args nil) :subsequent)) t)
 	(t nil)))
