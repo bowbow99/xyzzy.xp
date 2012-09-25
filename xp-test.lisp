@@ -45,7 +45,7 @@
 ;(DO-TEST n) runs just the test with the given number. 
 
 #+:symbolics(use-package "CL")
-(in-package "user")
+(in-package :user)
 (eval-when (eval load compile) (xp::install #+symbolics :macro #+symbolics t))
 (proclaim '(special form test-list failed-tests *dt*))
 (defvar in-tester nil)
@@ -82,7 +82,7 @@
 (defun do-test (n)
   (catch 'in-tester
     (let* ((info (nth n test-list))
-	   (*package* (find-package "USER"))
+	   (*package* (find-package :user))
 	   (*break-on-warnings* t)
 	   (tester (if (symbolp (car info)) (pop info) 'test-ordinary))
 	   (value (cadr info))
@@ -990,14 +990,14 @@ linebreaks"))
 	       (if atsign (push "@" obj))
 	       (xp::format xp (formatter "~V{~A~}") n obj))
 	     (plet 20 0
-	       (let ((*package* (find-package "XP")))
+	       (let ((*package* (find-package :xp)))
 		 (xp::format nil (formatter "-~/foo5/-") '(1 2 3 4))))) "-123-")
   (test-def ((defun foo6 (xp obj colon atsign &optional (n 3))
 	       (if colon (push ":" obj))
 	       (if atsign (push "@" obj))
 	       (xp::format xp (formatter "~V{~A~}") n obj))
 	     (plet 20 0
-	       (let ((*package* (find-package "XP")))
+	       (let ((*package* (find-package :xp)))
 		 (xp::format nil (formatter "-~/user::foo6/-") '(1 2 3 4))))) "-123-")
   (test-def ((defun bar (xp &rest objects)
 	       (xp::format xp (formatter "~{~A~}") objects))
