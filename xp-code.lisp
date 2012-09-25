@@ -85,6 +85,22 @@
 	  defstruct finish-output force-output clear-output)
   "printing functions redefined by xp.")
 
+;; [CLHS: Function WRITE-STRING, WRITE-LINE]: http://www.lispworks.com/documentation/HyperSpec/Body/f_wr_stg.htm
+(defun %write-string (string &optional stream &key (start 0) end)
+  (setf stream (cond ((eql stream t)   *terminal-io*)
+                     ((eql stream nil) *standard-output*)
+                     ((streamp stream) stream)))
+  (unless end
+    (setf end (length string)))
+  (do ((i start (1+ i)))
+      ((= i end) string)
+    (lisp:write-char (char string i) stream)))
+
+(defun %write-line (string &optional stream &key (start 0) end)
+  (prog1
+      (%write-string string stream :start start :end end)
+    (terpri)))
+
 ;must do the following in common lisps not supporting *print-shared*
 
 (defvar *print-shared* nil)
@@ -972,7 +988,7 @@
 
 (defun flush (xp)
   (unless *locating-circularities*
-    (lisp:write-string
+    (%write-string
        (buffer xp) (base-stream xp) :end (buffer-ptr xp)))
   (incf (buffer-offset xp) (buffer-ptr xp))
   (incf (charpos xp) (buffer-ptr xp))
@@ -998,7 +1014,7 @@
       (throw 'line-limit-abbreviation-exit t))
     (incf (line-no xp))
     (unless *locating-circularities*
-      (lisp:write-line
+      (%write-line
           (buffer xp) (base-stream xp) :end end))))
 
 (defun setup-for-next-line (xp Qentry)
@@ -1376,7 +1392,7 @@
   (setq stream (decode-stream-arg stream))
   (if (xp-structure-p stream)
       (write-string+ string stream start end)
-      (lisp:write-string string stream :start start :end end))
+      (%write-string string stream :start start :end end))
   string)
 
 (defun write-line (string &optional (stream *standard-output*)
@@ -1385,7 +1401,7 @@
   (if (xp-structure-p stream)
       (progn (write-string+ string stream start end)
 	     (pprint-newline+ :unconditional stream))
-      (lisp:write-line string stream :start start :end end))
+      (%write-line string stream :start start :end end))
   string)
 
 (defun terpri (&optional (stream *standard-output*))
