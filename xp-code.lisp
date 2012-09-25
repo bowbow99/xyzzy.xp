@@ -494,8 +494,7 @@
   ;;following block specific value.
   ;;SECTION-START total position where the section (see AIM-1102)
   ;;that is rightmost in the queue started.
-  (buffer (make-array #.buffer-min-size :element-type
-                      #-symbolics 'string-char #+symbolics 'character))
+  (buffer (make-array #.buffer-min-size :element-type 'character))
   charpos
   buffer-ptr
   buffer-offset
@@ -532,8 +531,7 @@
   ;;                      or if per-line-prefix then cons of suffix and
   ;;                      per-line-prefix.
   ;;     for :END-BLOCK suffix for the block if any.
-  (prefix (make-array #.buffer-min-size :element-type
-                      #-symbolics 'string-char #+symbolics 'character))
+  (prefix (make-array #.buffer-min-size :element-type 'character))
   ;;this stores the prefix that should be used at the start of the line
   (prefix-stack (make-array #.prefix-stack-min-size))
   prefix-stack-ptr
@@ -545,8 +543,7 @@
   ;;NON-BLANK-PREFIX-PTR current length of non-blank prefix.
   ;;INITIAL-PREFIX-PTR prefix-ptr at the start of this block.
   ;;SECTION-START-LINE line-no value at last non-literal break at this level.
-  (suffix (make-array #.buffer-min-size :element-type
-                      #-symbolics 'string-char #+symbolics 'character))
+  (suffix (make-array #.buffer-min-size :element-type 'character))
   ;;this stores the suffixes that have to be printed to close of the current
   ;;open blocks.  For convenient in popping, the whole suffix
   ;;is stored in reverse order.
