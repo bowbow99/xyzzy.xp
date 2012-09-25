@@ -459,26 +459,26 @@
 (lisp:defstruct (xp-structure
                  (:conc-name nil)
                  #-xyzzy (:print-function describe-xp))
-  (BASE-STREAM nil) ;;The stream io eventually goes to.
-  LINEL ;;The line length to use for formatting.
-  LINE-LIMIT ;;If non-NIL the max number of lines to print.
-  LINE-NO ;;number of next line to be printed.
-  CHAR-MODE ;;NIL :UP :DOWN :CAP0 :CAP1 :CAPW
-  CHAR-MODE-COUNTER ;depth of nesting of ~(...~)
-  DEPTH-IN-BLOCKS
+  (base-stream nil) ;;The stream io eventually goes to.
+  linel ;;The line length to use for formatting.
+  line-limit ;;If non-NIL the max number of lines to print.
+  line-no ;;number of next line to be printed.
+  char-mode ;;NIL :UP :DOWN :CAP0 :CAP1 :CAPW
+  char-mode-counter ;depth of nesting of ~(...~)
+  depth-in-blocks
   ;;Number of logical blocks at QRIGHT that are started but not ended.
-  (BLOCK-STACK (make-array #.block-stack-min-size))
-  BLOCK-STACK-PTR
+  (block-stack (make-array #.block-stack-min-size))
+  block-stack-ptr
   ;;This stack is pushed and popped in accordance with the way blocks are
   ;;nested at the moment they are entered into the queue.  It contains the
   ;;following block specific value.
   ;;SECTION-START total position where the section (see AIM-1102)
   ;;that is rightmost in the queue started.
-  (BUFFER (make-array #.buffer-min-size :element-type
+  (buffer (make-array #.buffer-min-size :element-type
                       #-symbolics 'string-char #+symbolics 'character))
-  CHARPOS
-  BUFFER-PTR
-  BUFFER-OFFSET
+  charpos
+  buffer-ptr
+  buffer-offset
   ;;This is a vector of characters (eg a string) that builds up the
   ;;line images that will be printed out.  BUFFER-PTR is the
   ;;buffer position where the next character should be inserted in
@@ -492,9 +492,9 @@
   ;; Line position (eg (+ BUFFER-PTR CHARPOS)).  Indentations are stored in this form.
   ;; Total position if all on one line (eg (+ BUFFER-PTR BUFFER-OFFSET))
   ;;  Positions are stored in this form.
-  (QUEUE (make-array #.queue-min-size))
-  QLEFT
-  QRIGHT
+  (queue (make-array #.queue-min-size))
+  Qleft
+  Qright
   ;;This holds a queue of action descriptors.  QLEFT and QRIGHT
   ;;point to the next entry to dequeue and the last entry enqueued
   ;;respectively.  The queue is empty when
@@ -512,11 +512,11 @@
   ;;                      or if per-line-prefix then cons of suffix and
   ;;                      per-line-prefix.
   ;;     for :END-BLOCK suffix for the block if any.
-  (PREFIX (make-array #.buffer-min-size :element-type
+  (prefix (make-array #.buffer-min-size :element-type
                       #-symbolics 'string-char #+symbolics 'character))
   ;;this stores the prefix that should be used at the start of the line
-  (PREFIX-STACK (make-array #.prefix-stack-min-size))
-  PREFIX-STACK-PTR
+  (prefix-stack (make-array #.prefix-stack-min-size))
+  prefix-stack-ptr
   ;;This stack is pushed and popped in accordance with the way blocks
   ;;are nested at the moment things are taken off the queue and printed.
   ;;It contains the following block specific values.
@@ -525,7 +525,7 @@
   ;;NON-BLANK-PREFIX-PTR current length of non-blank prefix.
   ;;INITIAL-PREFIX-PTR prefix-ptr at the start of this block.
   ;;SECTION-START-LINE line-no value at last non-literal break at this level.
-  (SUFFIX (make-array #.buffer-min-size :element-type
+  (suffix (make-array #.buffer-min-size :element-type
                       #-symbolics 'string-char #+symbolics 'character))
   ;;this stores the suffixes that have to be printed to close of the current
   ;;open blocks.  For convenient in popping, the whole suffix
