@@ -782,13 +782,13 @@
 ;output is guaranteed not to contain a newline char.
 
 (defun write-char+ (char xp)
-  (if (eql char #\newline) (pprint-newline+ :unconditional xp)
+  (if (eql char #\LFD) (pprint-newline+ :unconditional xp)
       (write-char++ char xp)))
 
 (defun write-string+ (string xp start end)
   (let ((sub-end nil) next-newline)
     (loop (setq next-newline
-		(position #\newline string :test #'char= :start start :end end))
+		(position #\LFD string :test #'char= :start start :end end))
 	  (setq sub-end (if next-newline next-newline end))
 	  (write-string++ string xp start sub-end)
 	  (when (null next-newline) (return nil))
@@ -852,10 +852,10 @@
 				(floor (+ current (- colnum) colinc) colinc)))))))
 	   (length (- new current)))
       (when (plusp length)
-	(if (char-mode xp) (handle-char-mode xp #\space))
+	(if (char-mode xp) (handle-char-mode xp #\SPC))
 	(let ((end (+ (buffer-ptr xp) length)))
 	  (check-size xp buffer end)
-	  (fill (buffer xp) #\space :start (buffer-ptr xp) :end end)
+	  (fill (buffer xp) #\SPC :start (buffer-ptr xp) :end end)
 	  (setf (buffer-ptr xp) end))))))
 
 ;note following is smallest number >= x that is a multiple of colinc
@@ -871,7 +871,7 @@
       (setf (Qend xp ptr) (- (Qright xp) ptr))))
   (setf (section-start xp) (TP<-BP xp))
   (when (and (member kind '(:fresh :unconditional)) (char-mode xp))
-    (handle-char-mode xp #\newline))
+    (handle-char-mode xp #\LFD))
   (when (member kind '(:fresh :unconditional :mandatory))
     (attempt-to-output xp t nil)))
 
@@ -982,7 +982,7 @@
 
 (defun output-line (xp Qentry)
   (let* ((out-point (BP<-TP xp (Qpos xp Qentry)))
-	 (last-non-blank (position #\space (buffer xp) :test-not #'char=
+	 (last-non-blank (position #\SPC (buffer xp) :test-not #'char=
 				   :from-end t :end out-point))
 	 (end (cond ((member (Qkind xp Qentry) '(:fresh :unconditional)) out-point)
 		    (last-non-blank (1+ last-non-blank))
@@ -1024,7 +1024,7 @@
     (setf (prefix-ptr xp) (initial-prefix-ptr xp))
     (check-size xp prefix new-ind)
     (when (> new-ind (prefix-ptr xp))
-      (fill (prefix xp) #\space :start (prefix-ptr xp) :end new-ind))
+      (fill (prefix xp) #\SPC :start (prefix-ptr xp) :end new-ind))
     (setf (prefix-ptr xp) new-ind)))
 
 (defun set-prefix (xp prefix-string)
@@ -1292,7 +1292,7 @@
   (terpri stream)
   (let ((*print-escape* t))
     (basic-write object stream))
-  (write-char #\space stream)
+  (write-char #\SPC stream)
   object)
 
 (defun prin1 (object &optional (stream *standard-output*))
@@ -1682,7 +1682,7 @@
 (defun literal (start end)
   (let ((sub-end nil) next-newline (result nil))
     (loop (setq next-newline
-		(position #\newline *string* :start start :end end))
+		(position #\LFD *string* :start start :end end))
 	  (setq sub-end (if next-newline next-newline end))
 	  (when (< start sub-end)
 	    (push (if (= start (1- sub-end))
@@ -1841,7 +1841,7 @@
       (when (if (null c) (< start end) (< start i))
 	(push (literal start (if i i end)) result))
       (when (null c) (return (nreverse result)))
-      (when (char= c #\newline)
+      (when (char= c #\LFD)
 	(multiple-value-bind (colon atsign)
 	    (parse-params (1+ i) nil :nocolonatsign t)
 	  (when atsign (push `(pprint-newline+ :unconditional xp) result))
@@ -1849,7 +1849,7 @@
 	  (when (not colon)
 	    (setq j (position-if-not
 		      #'(lambda (c)
-			  (or (char= c #\tab) (char= c #\space)))
+			  (or (char= c #\TAB) (char= c #\SPC)))
 		      *string* :start j :end end))
 	    (when (null j) (setq j end)))
 	  (setq start j)
@@ -2260,9 +2260,9 @@
 			    (directive-start (caddr chunks))))
 		   (colon ")"))))
       (when (cdddr chunks) (err 24 "Too many subclauses in ~~<...~~:>" (1- start)))
-      (when (and prefix (or (find #\~ prefix) (find #\newline prefix)))
+      (when (and prefix (or (find #\~ prefix) (find #\LFD prefix)))
 	(err 25 "Prefix in ~~<...~~:> must be a literal string without newline" start))
-      (when (and suffix (or (find #\~ suffix) (find #\newline suffix)))
+      (when (and suffix (or (find #\~ suffix) (find #\LFD suffix)))
 	(err 26 "Suffix in ~~<...~~:> must be a literal string without newline"
 	     (cadr chunks)))
       (car (bind-args t (if atsign `(prog1 ,(args) (setq ,(args) nil)) (get-arg))
@@ -2296,12 +2296,12 @@
 	      body)))
 
 (defun fill-transform-char (char)
-  (if (or (char= char #\space) (char= char #\tab))
+  (if (or (char= char #\SPC) (char= char #\TAB))
       (list `(write-char++ ,char xp) '(pprint-newline+ :fill xp))
       `((write-char++ ,char xp))))
 
 (defun fill-transform-literal (string)
-  (flet ((white-space (c) (or (char= c #\space) (char= c #\tab))))
+  (flet ((white-space (c) (or (char= c #\SPC) (char= c #\TAB))))
     (do ((index 0 end) (result) (end nil nil)) (nil)
       (let ((white (position-if #'white-space string :start index)))
 	(when white
@@ -2331,7 +2331,7 @@
 	(loop (pprint-pop)
 	      (write+ (aref v i) xp)
 	      (if (= (incf i) end) (return nil))
-	      (write-char++ #\space xp)
+	      (write-char++ #\SPC xp)
 	      (pprint-newline+ :fill xp))))))
 
 (proclaim '(special *prefix*))
@@ -2354,7 +2354,7 @@
 			       (write+ (apply #'aref array indices) xp)
 			       (pretty-slice (1+ slice)))
 			   (if (= (incf i) end) (return nil))
-			   (write-char++ #\space xp)
+			   (write-char++ #\SPC xp)
 			   (pprint-newline+ (if (= slice bottom) :fill :linear) xp)))))))
       (pretty-slice 0))))
 
@@ -2368,7 +2368,7 @@
     (pprint-exit-if-list-exhausted)
     (loop (write+ (pprint-pop) s)
 	  (pprint-exit-if-list-exhausted)
-	  (write-char++ #\space s)
+	  (write-char++ #\SPC s)
 	  (pprint-newline+ :linear s))))
 
 (defun pprint-fill (s list &optional (colon? t) atsign?)
@@ -2378,7 +2378,7 @@
     (pprint-exit-if-list-exhausted)
     (loop (write+ (pprint-pop) s)
 	  (pprint-exit-if-list-exhausted)
-	  (write-char++ #\space s)
+	  (write-char++ #\SPC s)
 	  (pprint-newline+ :fill s))))
 
 (defun pprint-tabular (s list &optional (colon? t) atsign? (tabsize nil))
@@ -2389,7 +2389,7 @@
     (pprint-exit-if-list-exhausted)
     (loop (write+ (pprint-pop) s)
 	  (pprint-exit-if-list-exhausted)
-	  (write-char++ #\space s)
+	  (write-char++ #\SPC s)
 	  (pprint-tab+ :section-relative 0 tabsize s)
 	  (pprint-newline+ :fill s))))
 
@@ -2429,7 +2429,7 @@
       (pprint-indent+ :current 1 xp)
       (loop
 	(pprint-exit-if-list-exhausted)
-	(write-char++ #\space xp)
+	(write-char++ #\SPC xp)
 	(when (eq i (car template))
 	  (pprint-indent+ :block (cadr template) xp)
 	  (setq template (cddr template))
@@ -2590,16 +2590,16 @@
 		       (pprint-logical-block (xp nil)
 			 (write first :stream xp)
 			 (when (and skip-first-non-expr (not (eq type :expr)))
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (write token :stream xp)
 			   (next-token))
 			 (when (eq type :expr)
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (pprint-indent :current 0 xp)
 			   (loop (write token :stream xp)
 				 (next-token)
 				 (when (not (eq type :expr)) (return nil))
-				 (write-char #\space xp)
+				 (write-char #\SPC xp)
 				 (pprint-newline newline-type xp))))))
 		   (print-cond (xp)
 		     (let ((first token))
@@ -2607,10 +2607,10 @@
 		       (pprint-logical-block (xp nil)
 			 (write first :stream xp)
 			 (when (eq type :expr)
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (write token :stream xp)
 			   (next-token))
-			 (write-char #\space xp)
+			 (write-char #\SPC xp)
 			 (pprint-indent :block 2 xp)
 			 (pprint-newline :linear xp)
 			 (print-clause xp)
@@ -2618,7 +2618,7 @@
 			 (when (and (symbolp token)
 				    (string= (string token) "ELSE"))
 			   (print-else-or-end xp)
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (pprint-newline :linear xp)
 			   (print-clause xp)
 			   (print-and-list xp))
@@ -2629,14 +2629,14 @@
 		     (loop (when (not (and (symbolp token)
 					   (string= (string token) "AND")))
 				 (return nil))
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (pprint-newline :mandatory xp)
 			   (write token :stream xp)
 			   (next-token)
-			   (write-char #\space xp)
+			   (write-char #\SPC xp)
 			   (print-clause xp)))
 		   (print-else-or-end (xp)
-		     (write-char #\space xp)
+		     (write-char #\SPC xp)
 		     (pprint-indent :block 0 xp)
 		     (pprint-newline :linear xp)
 		     (write token :stream xp)
@@ -2645,10 +2645,10 @@
 	    (pprint-exit-if-list-exhausted)
 	    (write (pprint-pop) :stream xp)
 	    (next-token)
-	    (write-char #\space xp)
+	    (write-char #\SPC xp)
 	    (pprint-indent :current 0 xp)
 	    (loop (print-clause xp)
-		  (write-char #\space xp)
+		  (write-char #\SPC xp)
 		  (pprint-newline :linear xp)))))))
 
 ;Backquote is a big problem we MUST do all this reconsing of structure in
