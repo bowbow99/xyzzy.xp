@@ -91,21 +91,57 @@
           )
   "printing functions redefined by xp.")
 
+
+;;;; debugging
+
+(define-condition debug-info (condition)
+  (fmt args)
+  (:report (lambda (info s)
+             (apply #'lisp:format s
+                    (debug-info-fmt info)
+                    (debug-info-args info)))))
+(export '(debug-info))
+
+(defmacro ?> (datum &rest args)
+  `(signal (make-condition
+            'debug-info
+            ,@(if (stringp datum)
+                `(:fmt ,datum :args (list ,@args))
+                `(:fmt "~&*** debug log~%~:{* ~S => ~S~%~}"
+                  :args (list (list ,@(mapcar (lambda (form)
+                                                `(list ',form ,form))
+                                              (cons datum args)))))))))
+
+
+
 ;; [CLHS: Function WRITE-STRING, WRITE-LINE]: http://www.lispworks.com/documentation/HyperSpec/Body/f_wr_stg.htm
 (defun %write-string (string &optional stream &key (start 0) end)
-  (setf stream (cond ((eql stream t)   *terminal-io*)
-                     ((eql stream nil) *standard-output*)
-                     ((streamp stream) stream)))
+  (unless (streamp stream)
+    (setq stream (case stream
+                   ((t)   *terminal-io*)
+                   ((nil) *standard-output*)
+                   (otherwise (error 'type-error
+                                     :datum stream
+                                     :expected-type '(or stream (member t nil)))))))
   (unless end
     (setf end (length string)))
+  ;(?> "~&>>> %write-string:~%")
+  ;(?> string stream start end)
   (do ((i start (1+ i)))
       ((= i end) string)
     (lisp:write-char (char string i) stream)))
 
 (defun %write-line (string &optional stream &key (start 0) end)
+  (unless (streamp stream)
+    (setq stream (case stream
+                   ((t)   *terminal-io*)
+                   ((nil) *standard-output*)
+                   (otherwise (error 'type-error
+                                     :datum stream
+                                     :expected-type '(or stream (member t nil)))))))
   (prog1
       (%write-string string stream :start start :end end)
-    (terpri)))
+    (terpri stream)))
 
 ;; missing standard print control variables
 
