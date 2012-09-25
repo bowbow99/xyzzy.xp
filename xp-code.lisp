@@ -156,6 +156,37 @@
 (defun structure-type-p (x) (and (symbolp x) (get x 'structure-printer)))
 (defun output-width     (&optional (s *standard-output*)) (declare (ignore s)) nil)
 (defun output-position  (&optional (s *standard-output*)) (excl::charpos s)) )
+
+#+xyzzy
+(eval-when (:execute :compile-toplevel :load-toplevel)
+
+  (defun structure-type-p (x)
+    "Return true if X is a symbol naming a structure."
+    (and (symbolp x)
+         (get x 'si:structure-definition)))
+
+  ;; NOTE: This function is used to initialize XP stream's slot "linel" when
+  ;; `*print-right-margin*` is not set. Which means, this function is supposed
+  ;; to return "maixmum line length such that output can be displayed without
+  ;; wraparound or truncation.".
+  ;;  [CLHS: Variable *PRINT-RIGHT-MARGIN*]
+  ;;
+  ;; return window-width for buffer-stream?
+  (defun output-width (&optional (s *standard-output*))
+    nil)
+
+  ;; NOTE: This function is used to initialize XP stream's slot "charpos".
+  ;; The slot is supposed to hold current position in a buffer, and buffer
+  ;; is to build line image I assume. So I think what this function is
+  ;; supposed to return is current column of the stream.
+  ;;
+  (defun output-position (&optional (s *standard-output*))
+    (handler-case
+        (si:*stream-column s)
+      (error ()
+        (warn "An stream that `si:*stream-column` can't handle: ~S" s)
+        nil)))
+  )
 
 
 ; Joachim Laubsch <laubsch%hpljl@hplabs.hp.com> is the contact at HP Labs.
