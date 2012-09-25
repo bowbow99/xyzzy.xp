@@ -114,6 +114,15 @@
 
 (export '(*print-array* *print-case* *print-shared* *print-gensym*))
 
+;; type-of for structure
+
+(shadow 'type-of)
+
+(defun type-of (object)
+  (if (si:*structurep object)
+    (si:*structure-definition-name (si:*structure-definition object))
+    (lisp:type-of object)))
+
 
 ;must do the following in common lisps not supporting *print-shared*
 
