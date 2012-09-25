@@ -223,7 +223,7 @@
     (handler-case
         (si:*stream-column s)
       (error ()
-        (warn "An stream that `si:*stream-column` can't handle: ~S" s)
+        ;(warn "An stream that `si:*stream-column` can't handle: ~S" s)
         nil)))
   )
 
