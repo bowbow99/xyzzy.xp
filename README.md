@@ -1,6 +1,10 @@
 XP: XP Common Lisp pretty printer for xyzzy
 ===========================================
 
+origin: [Package: lang/lisp/code/io/xp/][1]
+
+  [1]: http://www.cs.cmu.edu/afs/cs.cmu.edu/project/ai-repository/ai/lang/lisp/code/io/xp/0.html
+
 Status: 作業中
 --------------
 `xp-code.lisp` を（コンパイルして）読み込んで `(xp::install)` すれば一応
