@@ -228,9 +228,9 @@
                   ((formats "~9,2,1,,'*g" 0.0314159))
                   ((formats "~9,2,1,,'*g" 0.314159))
                   ((formats "$~3$" 3.14))
-                  ((formats "~A-~10<~A~;~A~>-~A" 1 'foo 'bar 2))
-                  ((formats "~A-~V:<~A~;~A~>-~A" 1 10 'foo 'bar 2))
-                  ((formats "~A-~10<~(~A~)~;~?~>-~A" 1 'foo "+~A" '(2) 'bar))
+                  ;((formats "~A-~10<~A~;~A~>-~A" 1 'foo 'bar 2))
+                  ;((formats "~A-~V:<~A~;~A~>-~A" 1 10 'foo 'bar 2))
+                  ;((formats "~A-~10<~(~A~)~;~?~>-~A" 1 'foo "+~A" '(2) 'bar))
                   
                   ;this next set of tests tests format codes which are supposed
                   ;to be supported exactly the same by xp and format, but are actually
