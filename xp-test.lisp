@@ -228,9 +228,9 @@
                   ((formats "~9,2,1,,'*g" 0.0314159))
                   ((formats "~9,2,1,,'*g" 0.314159))
                   ((formats "$~3$" 3.14))
-                  ((formats "~A-~10<~A~;~A~>-~A" 1 'foo 'bar 2))
-                  ((formats "~A-~V:<~A~;~A~>-~A" 1 10 'foo 'bar 2))
-                  ((formats "~A-~10<~(~A~)~;~?~>-~A" 1 'foo "+~A" '(2) 'bar))
+                  ;((formats "~A-~10<~A~;~A~>-~A" 1 'foo 'bar 2))
+                  ;((formats "~A-~V:<~A~;~A~>-~A" 1 10 'foo 'bar 2))
+                  ;((formats "~A-~10<~(~A~)~;~?~>-~A" 1 'foo "+~A" '(2) 'bar))
                   
                   ;this next set of tests tests format codes which are supposed
                   ;to be supported exactly the same by xp and format, but are actually
@@ -391,6 +391,7 @@ test")
                    "tEst Test one test")
                   ((format-xps "tEst~:@( tesT ~S~) test" 'one)
                    "tEst TEST ONE test")
+                  #-xyzzy
                   ((plet 44 0 (xp::format nil (formatter "~:(~W~)")
                                           '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1))
                                             (tuz a b))))
@@ -559,7 +560,7 @@ test a")
                   ((plet 16 0
                      (let ((*print-length* 2))
                        (xp::format nil (formatter "---~:@<~a~^ ~a~^ ~a~:>~A--") 12 3456 789)))
-                   "---(12 3456 ...)NIL--")
+                   "---(12 3456 ...)nil--")
 
                   ((plet 20 0 (xp::format nil (formatter "test~<a~2%  test~:>b") nil)) "testa
 
@@ -908,7 +909,7 @@ linebreaks"))
                   ((plet 10 0
                      (let ((*print-pretty* t))
                        (xp::format nil (formatter "~W") '#0Afoo)))
-                   "#0A FOO")
+                   "#0A foo")
                   ((plet 30 0
                      (let ((*print-pretty* t))
                        (string-upcase
@@ -1017,24 +1018,24 @@ linebreaks"))
                         (with-output-to-string (s)
                           (setq x (xp::write '(setq a 8 c "2") :stream s :base 8 :lines 4)))
                         x)))
-                   ("(SETQ A 10 C \"2\")" (setq a 8 c "2")))
+                   ("(setq a 10 c \"2\")" (setq a 8 c "2")))
                   ((plet 10 0
                      (let ((*print-pretty* nil))
                        (with-output-to-string (s)
                          (xp::write '(setq a 8 c "2") :stream s :escape nil :pretty t))))
-                   "(SETQ A 8
-      C 2)")
+                   "(setq a 8
+      c 2)")
                   (test-def ((defun bar1 (xp list &rest stuff) (declare (ignore stuff))
                                (xp::write list :stream xp :length 4 :pretty nil))
                              (plet 10 0
                                (xp::format nil (formatter "-~/bar1/-") '(setq a 8 c "2"))))
-                            "-(SETQ A 8 C ...)-")
+                            "-(setq a 8 c ...)-")
                   (test-def ((defun bar2 (xp list &rest stuff) (declare (ignore stuff))
                                (xp::write list :stream xp :length 4))
                              (plet 14 0
                                (xp::format nil (formatter "-~/bar2/-") '(setq a 8 c "2"))))
-                            "-(SETQ A 8
-       C ...)-")
+                            "-(setq a 8
+       c ...)-")
 
                   ((plet 10 0
                      (let ((*print-pretty* nil) x)
@@ -1059,8 +1060,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2"
@@ -1090,8 +1091,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2"
@@ -1119,8 +1120,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2-")
@@ -1146,35 +1147,35 @@ tests
                   ((with-output-to-string (*standard-output*) (xp::prin1 44 nil)) "44")
                   ((with-output-to-string (*terminal-io*) (xp::prin1 44 t)) "44")
 
-                  ((plet 100 0 (xp::princ-to-string '(setq a "2" b 8))) "(SETQ A 2 B 8)")
+                  ((plet 100 0 (xp::princ-to-string '(setq a "2" b 8))) "(setq a 2 b 8)")
                   ((plet 100 0
                      (let ((*print-pretty* nil))
-                       (xp::prin1-to-string '(setq a "2" b 8)))) "(SETQ A \"2\" B 8)")
+                       (xp::prin1-to-string '(setq a "2" b 8)))) "(setq a \"2\" b 8)")
                   ((plet 100 0 (xp::write-to-string '(setq a "2" b 8) :base 8 :right-margin 13))
-                   "(SETQ A \"2\"
-      B 10)")
+                   "(setq a \"2\"
+      b 10)")
 
                   (deftest
                    (progn (xp::defstruct foo (a 1) (b 2))
                      (plet 10 0 (xp::prin1-to-string (make-foo))))
-                   "#S(FOO :A 1
-       :B 2)")
+                   "#S(foo :a 1
+       :b 2)")
                   (deftest
                    (progn (xp::defstruct (foo00 (:conc-name nil)) (a 1) (b 2))
                      (plet 10 0 (xp::prin1-to-string (make-foo00))))
-                   "#S(FOO00 :A 1
-         :B 2)")
+                   "#S(foo00 :a 1
+         :b 2)")
                   (deftest
                    (progn (xp::defstruct (foo0 (:constructor mf)) (a 1) (b 2))
                      (plet 11 0 (xp::prin1-to-string (mf))))
-                   "#S(FOO0 :A 1
-        :B 2)")
+                   "#S(foo0 :a 1
+        :b 2)")
                   (deftest
                    (progn (xp::defstruct (foo1 (:conc-name tuz)) a (b 2))
                      (plet 16 0 (xp::prin1-to-string (make-foo1 :a '(1 2 3)))))
-                   "#S(FOO1 :A (1 2
+                   "#S(foo1 :a (1 2
             3)
-        :B 2)")
+        :b 2)")
                   (deftest
                    (progn (defun foo2p (ob s d)
                             (if (and *print-level* (not (< d *print-level*))) (xp::princ "#" s)
@@ -1249,13 +1250,13 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                                             (cons (member a b c)))
                                           (formatter "~{~a+~a~}"))
                      (plet 20 0 (xp::format nil (formatter "~W") '(a a))))
-                   "A+A")
+                   "a+a")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (cons) (cons (member a)))
                                           (formatter "~{~a-~a~}") 1)
                      (plet 20 0 (xp::format nil (formatter "~W") '((a) a))))
-                   "(A)-A")
+                   "(a)-a")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch 'hash-table (formatter "foof"))
@@ -1282,7 +1283,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                                           #'(lambda (xp obj)
                                               (xp::format xp (formatter "--~S") (coerce obj 'list))))
                      (plet 20 0 (xp::format nil (formatter "~W") '#(k l d a))))
-                   "--(K L D A)")
+                   "--(k l d a)")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (member unwind-protect))
@@ -1290,63 +1291,63 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                                               (xp::print-fancy-fn-call xp list '(0 3 1 0))))
                      (plet 20 0 (xp::format nil (formatter "~W")
                                             '(unwind-protect (open f) (print errormsg)))))
-                   "(UNWIND-PROTECT
-    (OPEN F)
- (PRINT ERRORMSG))")
+                   "(unwind-protect
+    (open f)
+ (print errormsg))")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (member unwind-protect))
                                           (pprint-dispatch '(unwind-protect) nil))
                      (plet 20 0 (xp::format nil (formatter "~W")
                                             '(unwind-protect (open f) (print errormsg)))))
-                   "(UNWIND-PROTECT
-    (OPEN F)
-  (PRINT ERRORMSG))")
+                   "(unwind-protect
+    (open f)
+  (print errormsg))")
                   #-symbolics
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (member unwind-protect)) nil)
                      (plet 30 1 (xp::format nil (formatter "~W")
                                             '(unwind-protect (open f) (print errormsg)))))
-                   "(UNWIND-PROTECT (OPEN F)
-                (PRINT ERRORMSG))") ;note zwei: offset hash table
+                   "(unwind-protect (open f)
+                (print errormsg))") ;note zwei: offset hash table
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch 'cons (formatter "zot ~{~A ~}") 1)
                      (plet 20 0 (xp::format nil (formatter "~W") '(setq a b))))
-                   "zot SETQ A B ")
+                   "zot setq a b ")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch 'cons (pprint-dispatch '(22 . 33) nil) 1)
                      (plet 30 0 (xp::format nil (formatter "~W")
                                             '(unwind-protect (open f) (print errormsg)))))
-                   "(UNWIND-PROTECT (OPEN F)
- (PRINT ERRORMSG))")
+                   "(unwind-protect (open f)
+ (print errormsg))")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons) (formatter "zoz ~{~A ~}") 2)
                      (plet 100 0 (xp::format nil (formatter "~W") '(foo bar))))
-                   "zoz FOO BAR ")
+                   "zoz foo bar ")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons integer) (formatter "int ~{~A ~}") 3)
                      (plet 100 0 (xp::format nil (formatter "~W") '(3 bar))))
-                   "int 3 BAR ")
+                   "int 3 bar ")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (member a b)) (formatter "pip ~{~A ~}") 3)
                      (plet 100 0 (xp::format nil (formatter "~W") '(a bar))))
-                   "pip A BAR ")
+                   "pip a bar ")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch '(cons (member c)) (formatter "pop ~{~A~}") 4)
                      (plet 100 0 (xp::format nil (formatter "~W") '(a bar))))
-                   "pip A BAR ")
+                   "pip a bar ")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (let ((data (make-foo :a 10 :b 20)))
                        (plet 22 0 (xp::format nil (formatter "~W") data))))
-                   "#S(FOO :A +10 :B +20)")
+                   "#S(foo :a +10 :b +20)")
                   (deftest
                    (let ((*print-pprint-dispatch* *dt*))
                      (set-pprint-dispatch 'foo
@@ -1380,48 +1381,48 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                                                   (pprint-newline :linear)))))
                      nil))
                   ((ftest 100 0 '(setz a (car v) b (cdr v)) (*print-pprint-dispatch* *dt*))
-                   "[SETZ A (CAR V) B (CDR V)]")
+                   "[SETZ a (car v) b (cdr v)]")
                   ((ftest 20 0 '(setz a (car v) b (cdr v)) (*print-pprint-dispatch* *dt*))
-                   "[SETZ A (CAR V)
-      B (CDR V)]")
+                   "[SETZ a (car v)
+      b (cdr v)]")
                   ((ftest 20 20 '(setz a (car v) b (cdr v)) (*print-pprint-dispatch* *dt*))
                    "[SETZ
- A
- (CAR V)
- B
- (CDR V)]")
+ a
+ (car v)
+ b
+ (cdr v)]")
                   ((ftest 17 0 '(setz a (car v) b) (*print-pprint-dispatch* *dt*))
-                   "[SETZ A (CAR V)
-      B]")
+                   "[SETZ a (car v)
+      b]")
                   ((ftest 17 0 '(setz a (car v) . b) (*print-pprint-dispatch* *dt*))
-                   "[SETZ A (CAR V)
-      . B]")
+                   "[SETZ a (car v)
+      . b]")
                   ((ftest 100 0 '(setz . a) (*print-pprint-dispatch* *dt*))
-                   "[SETZ . A]")
+                   "[SETZ . a]")
                   ((ftest 100 0 '(setz a (car v) b (cdr v))
                           (*print-pprint-dispatch* *dt*) (*print-length* 2))
-                   "[SETZ A ...]")
+                   "[SETZ a ...]")
                   ((ftest 100 0 '(setz a (car v) b (cdr v))
                           (*print-pprint-dispatch* *dt*) (*print-level* 1))
-                   "[SETZ A # B #]")
+                   "[SETZ a # b #]")
                   ((ftest 100 0 '((setz a (car v) b (cdr v)))
                           (*print-pprint-dispatch* *dt*) (*print-level* 1))
                    "(#)")
                   ((ftest 100 0 '(setz a (car v) b (cdr v))
                           (*print-pprint-dispatch* *dt*) (*print-circle* t))
-                   "[SETZ A (CAR V) B (CDR V)]")
+                   "[SETZ a (car v) b (cdr v)]")
                   ((ftest 100 0 (read-from-string "(setz a #1=(car v) b #1#)")
                           (*print-pprint-dispatch* *dt*) (*print-circle* t) (*print-shared* t))
-                   "[SETZ A #1=(CAR V) B #1#]")
+                   "[SETZ a #1=(car v) b #1#]")
                   ((ftest 100 0 (read-from-string "(setz a #1=(car v) b #1#)")
                           (*print-pprint-dispatch* *dt*) (*print-circle* t) (*print-shared* nil))
-                   "[SETZ A (CAR V) B (CAR V)]")
+                   "[SETZ a (car v) b (car v)]")
                   ((ftest 100 0 (read-from-string "#1=(setz a (car v) b #1#)")
                           (*print-pprint-dispatch* *dt*) (*print-circle* t) (*print-shared* t))
-                   "#1=[SETZ A (CAR V) B #1#]")
+                   "#1=[SETZ a (car v) b #1#]")
                   ((ftest 100 0 (read-from-string "#1=(setz a (car v) b #1#)")
                           (*print-pprint-dispatch* *dt*) (*print-circle* t) (*print-shared* nil))
-                   "#1=[SETZ A (CAR V) B #1#]")
+                   "#1=[SETZ a (car v) b #1#]")
 
                   ((plet 16 0
                      (with-output-to-string (*terminal-io*)
@@ -1441,8 +1442,8 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                              (pprint-exit-if-list-exhausted)
                              (write-char #\SPC t)
                              (pprint-newline :linear t))))))
-                   "[SETZ A (CAR V)
-[     B (CDR V)")
+                   "[SETZ a (car v)
+[     b (cdr v)")
 
                   ((plet 100 0
                      (with-output-to-string (*standard-output*)
@@ -1462,7 +1463,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                              (if (null list) (return nil))
                              (write-char #\SPC)
                              (pprint-newline :linear))))))
-                   "SETZ A (CAR V) B (CDR V)")
+                   "SETZ a (car v) b (cdr v)")
 
                   (deftest
                    (progn (defun my-pprint-tabular (s list &optional (colon? t) atsign? (tabsize nil))
@@ -1521,445 +1522,462 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                   ((progn (setq *print-pprint-dispatch* (copy-pprint-dispatch)) nil))
 
                   ((ftest 15 0 '(cons aaaaaa bbbbb))
-                   "(CONS AAAAAA
-      BBBBB)")
+                   "(cons aaaaaa
+      bbbbb)")
                   ((ftest 15 0 '(cons aaaaaa (cons a b)) (*print-level* 1))
-                   "(CONS AAAAAA #)")
+                   "(cons aaaaaa #)")
 
                   ((ftest 100 0 '(block foo (if (null y) (return t)) x))
-                   "(BLOCK FOO (IF (NULL Y) (RETURN T)) X)")
+                   "(block foo (if (null y) (return t)) x)")
                   ((ftest 30 0 '(block foo (if (null y) (return t)) x))
-                   "(BLOCK FOO
-  (IF (NULL Y) (RETURN T))
-  X)")
+                   "(block foo
+  (if (null y) (return t))
+  x)")
                   ((ftest 30 40 '(block foo (if (null y) (return t)) x))
-                   "(BLOCK
- FOO
- (IF (NULL Y) (RETURN T))
- X)")
+                   "(block
+ foo
+ (if (null y) (return t))
+ x)")
                   ((ftest 100 0 '(block foo . t))
-                   "(BLOCK FOO . T)")
+                   "(block foo . t)")
                   ((ftest 100 0 '(block . t))
-                   "(BLOCK . T)")
+                   "(block . t)")
                   ((ftest 100 0 '((block . t)) (*print-level* 1))
                    "(#)")
 
                   ((ftest 20 0 '(case type (:foo (print 3))))
-                   "(CASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(case type
+  (:foo (print 3)))")
                   ((ftest 10 0 '(catch 'bar (foo x)))
-                   "(CATCH 'BAR
-  (FOO X))")
+                   "(catch 'bar
+  (foo x))")
+                  #-xyzzy
                   ((ftest 20 0 '(ccase type (:foo (print 3))))
-                   "(CCASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(ccase type
+  (:foo (print 3)))")
 
+                  #-xyzzy
                   ((ftest 100 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(COMPILER-LET ((A (FOO 3)) (B (FOO 4)) (C 1)) (TUZ A B))")
+                   "(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b))")
+                  #-xyzzy
                   ((ftest 50 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(COMPILER-LET ((A (FOO 3)) (B (FOO 4)) (C 1))
-  (TUZ A B))")
+                   "(compiler-let ((a (foo 3)) (b (foo 4)) (c 1))
+  (tuz a b))")
+                  #-xyzzy
                   ((ftest 44 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(COMPILER-LET ((A (FOO 3))
-               (B (FOO 4))
-               (C 1))
-  (TUZ A B))")
+                   "(compiler-let ((a (foo 3))
+               (b (foo 4))
+               (c 1))
+  (tuz a b))")
+                  #-xyzzy
                   ((ftest 44 50 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(COMPILER-LET
- ((A (FOO 3)) (B (FOO 4)) (C 1))
- (TUZ A B))")
+                   "(compiler-let
+ ((a (foo 3)) (b (foo 4)) (c 1))
+ (tuz a b))")
+                  #-xyzzy
                   ((ftest 30 0 '(compiler-let (bar baz def gack gortch) (tuz a b)))
-                   "(COMPILER-LET (BAR BAZ DEF
-               GACK GORTCH)
-  (TUZ A B))")
+                   "(compiler-let (bar baz def
+               gack gortch)
+  (tuz a b))")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let ((bar baz def gack . gortch))))
-                   "(COMPILER-LET ((BAR BAZ DEF GACK
-                . GORTCH)))")
+                   "(compiler-let ((bar baz def gack
+                . gortch)))")
+                  #-xyzzy
                   ((ftest 100 0 '(compiler-let (bar baz def gack . gortch)))
-                   "(COMPILER-LET (BAR BAZ DEF GACK . GORTCH))")
+                   "(compiler-let (bar baz def gack . gortch))")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let foo))
-                   "(COMPILER-LET FOO)")
+                   "(compiler-let foo)")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let ()))
-                   "(COMPILER-LET ())")
+                   "(compiler-let ())")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let . foo))
-                   "(COMPILER-LET . FOO)")
+                   "(compiler-let . foo)")
 
                   ((ftest 100 0 '(cond ((plusp x) (print x) . 4) (a b) (t (car x))))
-                   "(COND ((PLUSP X) (PRINT X) . 4) (A B) (T (CAR X)))")
+                   "(cond ((plusp x) (print x) . 4) (a b) (t (car x)))")
                   ((ftest 55 0 '(cond ((plusp x) (print x) (minus x)) (a b) (t (car x))))
-                   "(COND ((PLUSP X) (PRINT X) (MINUS X))
-      (A B)
-      (T (CAR X)))")
+                   "(cond ((plusp x) (print x) (minus x))
+      (a b)
+      (t (car x)))")
                   ((ftest 36 0 '(cond ((plusp x) (print x) (minus x)) (a b) (t (car x))))
-                   "(COND ((PLUSP X)
-       (PRINT X)
-       (MINUS X))
-      (A B)
-      (T (CAR X)))")
+                   "(cond ((plusp x)
+       (print x)
+       (minus x))
+      (a b)
+      (t (car x)))")
                   ((ftest 30 40 '(cond ((plusp x) (print x) (minus x)) (a b) (t (car x))))
-                   "(COND
- ((PLUSP X)
-  (PRINT X)
-  (MINUS X))
- (A B)
- (T (CAR X)))")
+                   "(cond
+ ((plusp x)
+  (print x)
+  (minus x))
+ (a b)
+ (t (car x)))")
                   ((ftest 10 40 '(cond (a b) . t))
-                   "(COND
- (A B)
- . T)")
+                   "(cond
+ (a b)
+ . t)")
                   ((ftest 10 40 '(cond))
-                   "(COND)")
+                   "(cond)")
 
+                  #-xyzzy
                   ((ftest 20 0 '(ctypecase type (:foo (print 3))))
-                   "(CTYPECASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(ctypecase type
+  (:foo (print 3)))")
                   ((ftest 20 0 '(defconstant foo 2 "test"))
-                   "(DEFCONSTANT FOO 2
+                   "(defconstant foo 2
   \"test\")")
                   ((ftest 30 0 '(defconstant foo 2 (defconstant)) (*print-level* 1))
-                   "(DEFCONSTANT FOO 2 #)")
+                   "(defconstant foo 2 #)")
                   ((ftest 40 0 '(define-setf-method ldb (a b) (make-right body a b)))
-                   "(DEFINE-SETF-METHOD LDB (A B)
-  (MAKE-RIGHT BODY A B))")
+                   "(define-setf-method ldb (a b)
+  (make-right body a b))")
 
                   ((ftest 100 0 '(defmacro foo (a (b c) &body d) (car a) (list b c)))
-                   "(DEFMACRO FOO (A (B C) &BODY D) (CAR A) (LIST B C))")
+                   "(defmacro foo (a (b c) &body d) (car a) (list b c))")
                   ((ftest 40 0 '(defmacro foo (a (b c) &body d) (car a) (list b c)))
-                   "(DEFMACRO FOO (A (B C) &BODY D)
-  (CAR A)
-  (LIST B C))")
+                   "(defmacro foo (a (b c) &body d)
+  (car a)
+  (list b c))")
                   ((ftest 25 0 '(defmacro foo (a (b c) &body d) (car a) (list b c)))
-                   "(DEFMACRO FOO (A (B C)
-               &BODY D)
-  (CAR A)
-  (LIST B C))")
+                   "(defmacro foo (a (b c)
+               &body d)
+  (car a)
+  (list b c))")
                   ((ftest 15 50 '(defmacro foo (a (b c) &body d) (car a) (list b c)))
-                   "(DEFMACRO
- FOO
- (A
-  (B C)
-  &BODY
-  D)
- (CAR A)
- (LIST B C))")
+                   "(defmacro
+ foo
+ (a
+  (b c)
+  &body
+  d)
+ (car a)
+ (list b c))")
                   ((ftest 100 0 '(defmacro foo () . t))
-                   "(DEFMACRO FOO () . T)")
+                   "(defmacro foo () . t)")
                   ((ftest 100 0 '(defmacro . foo))
-                   "(DEFMACRO . FOO)")
+                   "(defmacro . foo)")
 
                   ((ftest 100 0 '(define-modify-macro bar (a b) union "fancy union"))
-                   "(DEFINE-MODIFY-MACRO BAR (A B) UNION \"fancy union\")")
+                   "(define-modify-macro bar (a b) union \"fancy union\")")
                   ((ftest 40 0 '(define-modify-macro bar (a b) union "fancy union"))
-                   "(DEFINE-MODIFY-MACRO BAR (A B) UNION
+                   "(define-modify-macro bar (a b) union
   \"fancy union\")")
                   ((ftest 30 0 '(define-modify-macro bar (a b) union "fancy union"))
-                   "(DEFINE-MODIFY-MACRO BAR
-                     (A B)
-                     UNION
+                   "(define-modify-macro bar
+                     (a b)
+                     union
   \"fancy union\")")
                   ((ftest 100 0 '(define-modify-macro bar (a b) union . t))
-                   "(DEFINE-MODIFY-MACRO BAR (A B) UNION . T)")
+                   "(define-modify-macro bar (a b) union . t)")
                   ((ftest 100 0 '(define-modify-macro bar args . t))
-                   "(DEFINE-MODIFY-MACRO BAR ARGS . T)")
+                   "(define-modify-macro bar args . t)")
                   ((ftest 100 0 '(define-modify-macro bar . t))
-                   "(DEFINE-MODIFY-MACRO BAR . T)")
+                   "(define-modify-macro bar . t)")
                   ((ftest 100 0 '(define-modify-macro . t))
-                   "(DEFINE-MODIFY-MACRO . T)")
+                   "(define-modify-macro . t)")
                   ((print*c "#1=(define-modify-macro foo #1#)")
-                   "#1=(DEFINE-MODIFY-MACRO FOO #1#)")
+                   "#1=(define-modify-macro foo #1#)")
 
                   ((ftest 20 0 '(defparameter foo 2 "test"))
-                   "(DEFPARAMETER FOO 2
+                   "(defparameter foo 2
   \"test\")")
                   ((ftest 40 0 '(defsetf bar (a b) (store) (car x) (make-body a b)))
-                   "(DEFSETF BAR (A B) (STORE)
-  (CAR X)
-  (MAKE-BODY A B))")
+                   "(defsetf bar (a b) (store)
+  (car x)
+  (make-body a b))")
                   ((ftest 20 0 '(defsetf bar (a b) (store) (car x) (make-body a b)))
-                   "(DEFSETF BAR (A B)
-         (STORE)
-  (CAR X)
-  (MAKE-BODY A B))")
+                   "(defsetf bar (a b)
+         (store)
+  (car x)
+  (make-body a b))")
                   ((ftest 40 0 '(define-setf-method bar (a b) (car x) (make-body a b)))
-                   "(DEFINE-SETF-METHOD BAR (A B)
-  (CAR X)
-  (MAKE-BODY A B))")
+                   "(define-setf-method bar (a b)
+  (car x)
+  (make-body a b))")
                   ((ftest 40 0 '(defstruct (foo (:print-fn bar)) acac babab))
-                   "(DEFSTRUCT (FOO (:PRINT-FN BAR))
-  ACAC
-  BABAB)")
+                   "(defstruct (foo (:print-fn bar))
+  acac
+  babab)")
                   ((ftest 30 0 '(deftype bar (a) (satisfies bar-p)))
-                   "(DEFTYPE BAR (A)
-  (SATISFIES BAR-P))")
+                   "(deftype bar (a)
+  (satisfies bar-p))")
                   ((ftest 30 0 '(defun bar (a) (satisfies bar-p)))
-                   "(DEFUN BAR (A)
-  (SATISFIES BAR-P))")
+                   "(defun bar (a)
+  (satisfies bar-p))")
                   ((ftest 20 0 '(defvar foo 2 "test"))
-                   "(DEFVAR FOO 2
+                   "(defvar foo 2
   \"test\")")
 
                   ((ftest 100 0 '(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO ((A X (CDR A)) (I 1 (1+ I))) ((PLUSP A) T)  (PRINT A))")
+                   "(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t)  (print a))")
                   ((ftest 55 0 '(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO ((A X (CDR A)) (I 1 (1+ I)))
-    ((PLUSP A) T)
-  (PRINT A))")
+                   "(do ((a x (cdr a)) (i 1 (1+ i)))
+    ((plusp a) t)
+  (print a))")
                   ((ftest 30 0 '(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO ((A X (CDR A))
-     (I 1 (1+ I)))
-    ((PLUSP A) T)
-  (PRINT A))")
+                   "(do ((a x (cdr a))
+     (i 1 (1+ i)))
+    ((plusp a) t)
+  (print a))")
                   ((ftest 15 0 '(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO ((A X
-      (CDR A))
-     (I 1
-      (1+ I)))
-    ((PLUSP A)
-     T)
-  (PRINT A))")
+                   "(do ((a x
+      (cdr a))
+     (i 1
+      (1+ i)))
+    ((plusp a)
+     t)
+  (print a))")
                   ((ftest 15 20 '(do ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO
- ((A
-   X
-   (CDR A))
-  (I
+                   "(do
+ ((a
+   x
+   (cdr a))
+  (i
    1
-   (1+ I)))
- ((PLUSP A)
-  T)
- (PRINT A))")
+   (1+ i)))
+ ((plusp a)
+  t)
+ (print a))")
                   ((ftest 100 0 '(do () () . t))
-                   "(DO () ()  . T)")
+                   "(do () ()  . t)")
                   ((ftest 100 0 '(do () . t))
-                   "(DO () . T)")
+                   "(do () . t)")
                   ((ftest 100 0 '(do . t))
-                   "(DO . T)")
+                   "(do . t)")
 
                   ((ftest 55 0 '(do* ((a x (cdr a)) (i 1 (1+ i))) ((plusp a) t) (print a)))
-                   "(DO* ((A X (CDR A)) (I 1 (1+ I)))
-     ((PLUSP A) T)
-  (PRINT A))")
+                   "(do* ((a x (cdr a)) (i 1 (1+ i)))
+     ((plusp a) t)
+  (print a))")
                   ((ftest 35 0 '(do-all-symbols (s *package*) (print s)))
-                   "(DO-ALL-SYMBOLS (S *PACKAGE*)
-  (PRINT S))")
+                   "(do-all-symbols (s *package*)
+  (print s))")
                   ((ftest 35 0 '(do-external-symbols (s *package*) (print s)))
-                   "(DO-EXTERNAL-SYMBOLS (S *PACKAGE*)
-  (PRINT S))")
+                   "(do-external-symbols (s *package*)
+  (print s))")
                   ((ftest 35 0 '(do-symbols (s *package*) (print s)))
-                   "(DO-SYMBOLS (S *PACKAGE*)
-  (PRINT S))")
+                   "(do-symbols (s *package*)
+  (print s))")
                   ((ftest 25 0 '(dolist (s list) (print s)))
-                   "(DOLIST (S LIST)
-  (PRINT S))")
+                   "(dolist (s list)
+  (print s))")
                   ((ftest 25 0 '(dotimes (s list) (print s)))
-                   "(DOTIMES (S LIST)
-  (PRINT S))")
+                   "(dotimes (s list)
+  (print s))")
 
+                  #-xyzzy
                   ((ftest 20 0 '(ecase type (:foo (print 3))))
-                   "(ECASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(ecase type
+  (:foo (print 3)))")
+                  #-xyzzy
                   ((ftest 20 0 '(etypecase type (:foo (print 3))))
-                   "(ETYPECASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(etypecase type
+  (:foo (print 3)))")
                   ((ftest 20 0 '(eval-when (compile load) (defun foo () (car x))))
-                   "(EVAL-WHEN (COMPILE LOAD)
-  (DEFUN FOO ()
-    (CAR X)))")
+                   "(eval-when (compile load)
+  (defun foo ()
+    (car x)))")
 
                   ((ftest 100 0 '(flet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(FLET ((A (A B) (CAR A) (CAR B)) (B NIL T)) (A (B 3)))")
+                   "(flet ((a (a b) (car a) (car b)) (b nil t)) (a (b 3)))")
                   ((ftest 50 0 '(flet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(FLET ((A (A B) (CAR A) (CAR B)) (B NIL T))
-  (A (B 3)))")
+                   "(flet ((a (a b) (car a) (car b)) (b nil t))
+  (a (b 3)))")
                   ((ftest 42 0 '(flet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(FLET ((A (A B) (CAR A) (CAR B))
-       (B NIL T))
-  (A (B 3)))")
+                   "(flet ((a (a b) (car a) (car b))
+       (b nil t))
+  (a (b 3)))")
                   ((ftest 30 0 '(flet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(FLET ((A (A B)
-         (CAR A)
-         (CAR B))
-       (B NIL T))
-  (A (B 3)))")
+                   "(flet ((a (a b)
+         (car a)
+         (car b))
+       (b nil t))
+  (a (b 3)))")
                   ((ftest 35 50 '(flet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(FLET
- ((A (A B) (CAR A) (CAR B))
-  (B NIL T))
- (A (B 3)))")
+                   "(flet
+ ((a (a b) (car a) (car b))
+  (b nil t))
+ (a (b 3)))")
                   ((ftest 100 0 '(flet (() t . t) . t))
-                   "(FLET (() T . T) . T)")
+                   "(flet (() t . t) . t)")
                   ((ftest 100 0 '(flet t . t))
-                   "(FLET T . T)")
+                   "(flet t . t)")
                   ((ftest 100 0 '(flet . t))
-                   "(FLET . T)")
+                   "(flet . t)")
 
                   ((ftest 100 0 '(function (lambda (a) (car a))))
-                   "#'(LAMBDA (A) (CAR A))")
+                   "#'(lambda (a) (car a))")
                   ((ftest 100 0 '(function (lambda (a) (car a))) (*print-pretty* nil))
-                   "(FUNCTION (LAMBDA (A) (CAR A)))")
+                   "(function (lambda (a) (car a)))")
                   ((ftest 5 20 '(function car))
-                   "#'CAR")
+                   "#'car")
                   ((ftest 100 0 '(function . a))
-                   "(FUNCTION . A)")
+                   "(function . a)")
                   ((ftest 100 0 '(function))
-                   "(FUNCTION)")
+                   "(function)")
                   ((ftest 100 0 '(function (lambda (a) (car a)) b))
-                   "(FUNCTION (LAMBDA (A) (CAR A)) B)")
+                   "(function (lambda (a) (car a)) b)")
 
                   ((ftest 42 0 '(labels ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(LABELS ((A (A B) (CAR A) (CAR B))
-         (B NIL T))
-  (A (B 3)))")
+                   "(labels ((a (a b) (car a) (car b))
+         (b nil t))
+  (a (b 3)))")
                   ((ftest 20 0 '(lambda (a b) (car a) (car b)))
-                   "(LAMBDA (A B)
-  (CAR A)
-  (CAR B))")
+                   "(lambda (a b)
+  (car a)
+  (car b))")
 
                   ((ftest 34 0 '(let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(LET ((A (FOO 3))
-      (B (FOO 4))
-      (C 1))
-  (TUZ A B))")
+                   "(let ((a (foo 3))
+      (b (foo 4))
+      (c 1))
+  (tuz a b))")
                   ((ftest 34 0 '(let* ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
-                   "(LET* ((A (FOO 3))
-       (B (FOO 4))
-       (C 1))
-  (TUZ A B))")
+                   "(let* ((a (foo 3))
+       (b (foo 4))
+       (c 1))
+  (tuz a b))")
+                  #-xyzzy
                   ((ftest 34 0 '(locally (declar (special x)) (print x)))
-                   "(LOCALLY (DECLAR (SPECIAL X))
-  (PRINT X))")
+                   "(locally (declar (special x))
+  (print x))")
                   ((ftest 42 0 '(macrolet ((a (a b) (car a) (car b)) (b () t)) (a (b 3))))
-                   "(MACROLET ((A (A B) (CAR A) (CAR B))
-           (B NIL T))
-  (A (B 3)))")
+                   "(macrolet ((a (a b) (car a) (car b))
+           (b nil t))
+  (a (b 3)))")
                   ((ftest 42 0 '(multiple-value-bind (a b) (compute-it x) (car a) (car b)))
-                   "(MULTIPLE-VALUE-BIND (A B)
-    (COMPUTE-IT X)
-  (CAR A)
-  (CAR B))")
+                   "(multiple-value-bind (a b)
+    (compute-it x)
+  (car a)
+  (car b))")
                   ((ftest 32 0 '(multiple-value-setq (a b) (compute-it x)))
-                   "(MULTIPLE-VALUE-SETQ (A B)
-  (COMPUTE-IT X))")
+                   "(multiple-value-setq (a b)
+  (compute-it x))")
 
                   ((ftest 100 0
                           '(prog (a b c) (print a) L SS (if (null b) c) long0 (car b) long))
-                   "(PROG (A B C)
-      (PRINT A)
- L SS (IF (NULL B) C)
- LONG0 (CAR B)
- LONG)")
+                   "(prog (a b c)
+      (print a)
+ L SS (if (null b) c)
+ long0 (car b)
+ long)")
                   ((ftest 100 100
                           '(prog (a b c) (print a) L SS (if (null b) c) long0 (car b) long))
-                   "(PROG (A B C)
-      (PRINT A)
- L SS (IF (NULL B) C)
- LONG0 (CAR B)
- LONG)")
+                   "(prog (a b c)
+      (print a)
+ L SS (if (null b) c)
+ long0 (car b)
+ long)")
                   ((ftest 100 0 '(prog () (print a) nil L . SS))
-                   "(PROG ()
-      (PRINT A)
-      NIL
+                   "(prog ()
+      (print a)
+      nil
  L . SS)")
                   ((ftest 100 0 '(prog t . t))
-                   "(PROG T . T)")
+                   "(prog t . t)")
                   ((ftest 100 0 '(prog . t))
-                   "(PROG . T)")
+                   "(prog . t)")
 
                   ((ftest 100 0 '(prog* ((a 3) b c) L SS (if (null b) c) long0 (car b)))
-                   "(PROG* ((A 3) B C)
- L SS  (IF (NULL B) C)
- LONG0 (CAR B))")
+                   "(prog* ((a 3) b c)
+ L SS  (if (null b) c)
+ long0 (car b))")
+                  #-xyzzy
                   ((ftest 25 0 '(progv (a b) (1 2) (car a)))
-                   "(PROGV (A B) (1 2)
-  (CAR A))")
+                   "(progv (a b) (1 2)
+  (car a))")
 
                   ((ftest 20 0 '(setq a (car v) b (cdr v)))
-                   "(SETQ A (CAR V)
-      B (CDR V))")
+                   "(setq a (car v)
+      b (cdr v))")
                   ((ftest 20 20 '(setq a (car v) b (cdr v)))
-                   "(SETQ
- A
- (CAR V)
- B
- (CDR V))")
+                   "(setq
+ a
+ (car v)
+ b
+ (cdr v))")
                   ((ftest 17 0 '(setq a (car v) b))
-                   "(SETQ A (CAR V)
-      B)")
+                   "(setq a (car v)
+      b)")
                   ((ftest 17 0 '(setq a (car v) . b))
-                   "(SETQ A (CAR V)
-      . B)")
+                   "(setq a (car v)
+      . b)")
                   ((ftest 100 0 '(setq . a))
-                   "(SETQ . A)")
+                   "(setq . a)")
 
                   ((ftest 100 0 '(quote (lambda (a) (car a))))
-                   "'(LAMBDA (A) (CAR A))")
+                   "'(lambda (a) (car a))")
                   ((ftest 5 20 '(quote car))
-                   "'CAR")
+                   "'car")
                   ((ftest 100 0 '(quote . a))
-                   "(QUOTE . A)")
+                   "(quote . a)")
                   ((ftest 100 0 '(quote))
-                   "(QUOTE)")
+                   "(quote)")
                   ((ftest 100 0 '(quote (lambda (a) (car a)) b))
-                   "(QUOTE (LAMBDA (A) (CAR A)) B)")
+                   "(quote (lambda (a) (car a)) b)")
 
                   ((ftest 20 0 '(return-from foo (computation bar)))
-                   "(RETURN-FROM FOO
-  (COMPUTATION BAR))")
+                   "(return-from foo
+  (computation bar))")
 
                   ((ftest 20 0 '(setf a (car v) b (cdr v)))
-                   "(SETF A (CAR V)
-      B (CDR V))")
+                   "(setf a (car v)
+      b (cdr v))")
                   ((ftest 1000 0 '(setf a (car v) b (cdr v)))
-                   "(SETF A (CAR V) B (CDR V))")
+                   "(setf a (car v) b (cdr v))")
                   ((ftest 20 0 '(psetf a (car v) b (cdr v)))
-                   "(PSETF A (CAR V)
-       B (CDR V))")
+                   "(psetf a (car v)
+       b (cdr v))")
                   ((ftest 20 0 '(psetq a (car v) b (cdr v)))
-                   "(PSETQ A (CAR V)
-       B (CDR V))")
+                   "(psetq a (car v)
+       b (cdr v))")
 
                   ((ftest 100 0
                           '(tagbody (print a) L SS (if (null b) c) verylong (car b) long))
-                   "(TAGBODY (PRINT A)
- L SS    (IF (NULL B) C)
- VERYLONG (CAR B)
- LONG)")
+                   "(tagbody (print a)
+ L SS    (if (null b) c)
+ verylong (car b)
+ long)")
                   ((ftest 100 0 '(tagbody L SS (if (null b) c) . t))
-                   "(TAGBODY
- L SS    (IF (NULL B) C) . T)")
+                   "(tagbody
+ L SS    (if (null b) c) . t)")
                   ((ftest 100 0 '(tagbody L . SS))
-                   "(TAGBODY
+                   "(tagbody
  L . SS)")
                   ((ftest 100 0 '(tagbody . SS))
-                   "(TAGBODY . SS)")
+                   "(tagbody . SS)")
                   ((ftest 10 0 '(throw 'bar (foo x)))
-                   "(THROW 'BAR
-  (FOO X))")
+                   "(throw 'bar
+  (foo x))")
+                  #-xyzzy
                   ((ftest 20 0 '(typecase type (:foo (print 3))))
-                   "(TYPECASE TYPE
-  (:FOO (PRINT 3)))")
+                   "(typecase type
+  (:foo (print 3)))")
                   ((ftest 20 0 '(unless (plusp x) (print x)))
-                   "(UNLESS (PLUSP X)
-  (PRINT X))")
+                   "(unless (plusp x)
+  (print x))")
                   ((ftest 20 0 '(unwind-protect (open f) (print errormsg)))
-                   "(UNWIND-PROTECT
-    (OPEN F)
-  (PRINT ERRORMSG))")
+                   "(unwind-protect
+    (open f)
+  (print errormsg))")
                   ((ftest 20 0 '(when (plusp x) (print x)))
-                   "(WHEN (PLUSP X)
-  (PRINT X))")
+                   "(when (plusp x)
+  (print x))")
                   ((ftest 35 0 '(with-input-from-string (f string) (read f)))
-                   "(WITH-INPUT-FROM-STRING (F STRING)
-  (READ F))")
+                   "(with-input-from-string (f string)
+  (read f))")
                   ((ftest 45 0 '(with-open-file (f name :direction :input) (read f)))
-                   "(WITH-OPEN-FILE (F NAME :DIRECTION :INPUT)
-  (READ F))")
+                   "(with-open-file (f name :direction :input)
+  (read f))")
                   ((ftest 45 0 '(with-open-stream (stream (make-stream)) (read stream)))
-                   "(WITH-OPEN-STREAM (STREAM (MAKE-STREAM))
-  (READ STREAM))")
+                   "(with-open-stream (stream (make-stream))
+  (read stream))")
                   ((ftest 35 0 '(with-output-to-string (f string) (print f)))
-                   "(WITH-OUTPUT-TO-STRING (F STRING)
-  (PRINT F))")
+                   "(with-output-to-string (f string)
+  (print f))")
                   
                   ;These test the fast printing of simple atoms performed directly by XP
 
@@ -1981,13 +1999,13 @@ o\"")
                   ((print*s -20) "-20")
                   ((print*s 1234567890) "1234567890")
 
-                  ((print*s 'foo2) "FOO2")
+                  ((print*s 'foo2) "foo2")
                   ((print*s 'foo-bar (*print-case* :downcase)) "foo-bar")
                   ((print*s 'foo-bar (*print-case* :upcase)) "FOO-BAR")
                   ((print*s 'foo-bar (*print-case* :capitalize)) "Foo-Bar")
-                  ((print*s 'foo (*print-escape* nil)) "FOO")
-                  ((print*s ':foo) ":FOO")
-                  ((print*s ':foo (*print-escape* nil)) "FOO")
+                  ((print*s 'foo (*print-escape* nil)) "foo")
+                  ((print*s ':foo) ":foo")
+                  ((print*s ':foo (*print-escape* nil)) "foo")
                   ((print*s '*<-+->*) "*<-+->*")
                   ((print*s '*<-+->*) "*<-+->*")
 
@@ -2008,7 +2026,7 @@ o\"")
                   ((print*c "(A A NIL NIL B B)" (*print-shared* t))
                    "(A A NIL NIL B B)")
                   ((print*c "(Ac$ A NIL NIL B B)" (*print-right-margin* 15))
-                   "(AC$ A NIL NIL
+                   "(Ac$ A NIL NIL
  B B)")
                   ((print*c "(1 #1=#:FOO #1# #1# . #1#)" (*print-shared* t))
                    "(1 #1=#:FOO #1# #1# . #1#)")
@@ -2047,37 +2065,37 @@ o\"")
                   ((print*c "(A ((B . #1=(C . #2=(D E)))) #2# #1# F)" (*print-level* 2) (*print-shared* t))
                    "(A (#) #1=(D E) (C . #1#) F)")
                   ((print*c "(setq A #1=(car f) B C D #1#)"
-                            (*print-lines* 2) (*PRINT-RIGHT-MARGIN* 20) (*print-shared* t))
-                   "(SETQ A (CAR F)
+                            (*print-lines* 2) (*print-right-margin* 20) (*print-shared* t))
+                   "(setq A (car f)
       B C ..)")
                   ((print*c "(setq A #1=(car f) B C D #1#)"
                             (*print-lines* 1) (*print-right-margin* 20) (*print-shared* t))
-                   "(SETQ A (CAR F) ..)")
+                   "(setq A (car f) ..)")
 
                   ((format*c (formatter "~:<~:<~W ~W ~W ~W~:>~:>") "(#1=(1 a #1# 2 3 4))"
                              (*print-shared* t))
-                   "(#1=(1 A #1# 2))")
+                   "(#1=(1 a #1# 2))")
                   ((format*c (formatter "~:<~:<~W ~W ~W ~W~:>~:>") "(#1=(1 a #1# 2 3 4))"
                              (*print-shared* nil))
-                   "(#1=(1 A #1# 2))")
+                   "(#1=(1 a #1# 2))")
                   ((format*c (formatter "~:<~:<~W ~W ~W ~W~:>~:>") "((1 #1=(a) #1# 2 3 4))"
                              (*print-shared* t))
-                   "((1 #1=(A) #1# 2))")
+                   "((1 #1=(a) #1# 2))")
                   ((format*c (formatter "~:<~:<~W ~W ~W ~W~:>~:>") "((1 #1=(a) #1# 2 3 4))"
                              (*print-shared* nil))
-                   "((1 (A) (A) 2))")
+                   "((1 (a) (a) 2))")
                   ((format*c (formatter "~:<~W ~W ~W ~W~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* t))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~W ~W ~W ~W~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* nil))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~a ~a ~W ~a~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* t))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~a ~a ~W ~a~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* nil))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~a ~a ~<~:> ~a~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* t))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~a ~a ~<~:> ~a~:>") "#1=(1 a #1# 2 3 4)" (*print-shared* nil))
-                   "#1=(1 A #1# 2)")
+                   "#1=(1 a #1# 2)")
                   ((format*c (formatter "~:<~W ~W ~W ~W~:>") "#1=(1 2 . #1#)" (*print-shared* t))
                    "#1=(1 2 . #1#)")
                   ((format*c (formatter "~:<~W ~W ~W ~W~:>") "#1=(1 2 . #1#)" (*print-shared* nil))
@@ -2092,9 +2110,9 @@ o\"")
                    "(1 2 3 2 3)")
 
                   ((format*c (formatter "~:<~W ~W ~:@<~W ~W~:>~:>") "#1=(1 a b . #1#)" (*print-shared* t))
-                   "#1=(1 A (B . #1#))")
+                   "#1=(1 a (b . #1#))")
                   ((format*c (formatter "~@{~:<~W ~W ~:@<~W ~W~:>~:>~}") "#1=(1 a . #1#)" (*print-shared* t))
-                   "#1=(1 A #1#)")
+                   "#1=(1 a #1#)")
                   ((format*c (formatter "~:<~W ~W ~:@<~W ~W~:>~:>") "#1=(1 . #1#)" (*print-shared* t))
                    "#1=(1 . #1#)")
                   
@@ -2136,13 +2154,13 @@ eee")
 
                   ((plet 15 0 (let ((*print-lines* 1))
                                 (xp::format nil (formatter "~W") '(101 bar b zoto))))
-                   "(101 BAR B ..)")
+                   "(101 bar b ..)")
                   ((plet 15 0 (let ((*print-lines* 1))
                                 (xp::format nil (formatter "~W") '(101 bar ba zoto))))
-                   "(101 BAR BA ..)")
+                   "(101 bar ba ..)")
                   ((plet 15 0 (let ((*print-lines* 1))
                                 (xp::format nil (formatter "~W") '(101 bar baz zoto))))
-                   "(101 BAR ..)")
+                   "(101 bar ..)")
                   ((plet 15 0 (let ((*print-lines* 1))
                                 (xp::format nil (formatter "~W") '(101 (20 2) zoto))))
                    "(101 (20 2) ..)")
@@ -2198,8 +2216,8 @@ eee")
                                             '((((((((((((((((((((((((((((((((((((((setq a b
                                                                                         c d)))))))))))))))))))))))))))))))))))))))))
                    ;the next 2 lines must have spaces on them, not tabs
-                   "((((((((((((((((((((((((((((((((((((((SETQ A B
-                                           C D))))))))))))))))))))))))))))))))))))))")
+                   "((((((((((((((((((((((((((((((((((((((setq a b
+                                           c d))))))))))))))))))))))))))))))))))))))")
 
                   ((progn (setq xp::*free-xps* nil)
                      (plet 200 0 (xp::format nil (formatter "~W")
@@ -2252,20 +2270,20 @@ B")
                   ((ftest 40 0 '(list (loop for x in l and z in y do (print x) (print z)
                                         collect z into w)
                                  (print 111)))
-                   "(LIST (LOOP FOR X IN L
-            AND Z IN Y
-            DO (PRINT X)
-               (PRINT Z)
-            COLLECT Z INTO W)
-      (PRINT 111))")
+                   "(list (loop for x in l
+            and z in y
+            do (print x)
+               (print z)
+            collect z into w)
+      (print 111))")
                   ((ftest 40 0 '(loop (do this) and that and that
                                  (print (list lots of stuff))))
-                   "(LOOP (DO THIS)
-      AND
-      THAT
-      AND
-      THAT
-      (PRINT (LIST LOTS OF STUFF)))")
+                   "(loop (do this)
+      and
+      that
+      and
+      that
+      (print (list lots of stuff)))")
                   ((ftest 40 0 '(loop for i in numbers-list
                                  when (oddp i)
                                  do (print i)
@@ -2274,15 +2292,15 @@ B")
                                  else
                                  collect i into even-numbers
                                  finally (return (values odd-numbers even-numbers))))
-                   "(LOOP FOR I IN NUMBERS-LIST
-      WHEN (ODDP I)
-        DO (PRINT I)
-        AND COLLECT I INTO ODD-NUMBERS
-        AND DO (TERPRI)
-      ELSE
-        COLLECT I INTO EVEN-NUMBERS
-      FINALLY (RETURN (VALUES ODD-NUMBERS
-                              EVEN-NUMBERS)))")
+                   "(loop for i in numbers-list
+      when (oddp i)
+        do (print i)
+        and collect i into odd-numbers
+        and do (terpri)
+      else
+        collect i into even-numbers
+      finally (return (values odd-numbers
+                              even-numbers)))")
                   ((ftest 60 0 '(loop for x in l and z in y do (print x) (print z)
                                  when (plusp x) do (print x) end
                                  when (plusp x) unless (plusp y) do (print x) and do (print y)
@@ -2292,28 +2310,28 @@ B")
                                  when (plusp x) do (print x)
                                  else do (print y)
                                  if (zerop y) do (print z) and do (print w)))
-                   "(LOOP FOR X IN L
-      AND Z IN Y
-      DO (PRINT X)
-         (PRINT Z)
-      WHEN (PLUSP X) DO (PRINT X) END
-      WHEN (PLUSP X)
-        UNLESS (PLUSP Y)
-          DO (PRINT X)
-          AND DO (PRINT Y)
-        ELSE
-          DO (PRINT Z)
-      WHEN (PLUSP X)
-        UNLESS (PLUSP Y)
-          DO (PRINT X)
-          AND DO (PRINT Y)
-        END
-      ELSE
-        DO (PRINT Z)
-      WHEN (PLUSP X) DO (PRINT X) ELSE DO (PRINT Y)
-      IF (ZEROP Y)
-        DO (PRINT Z)
-        AND DO (PRINT W))")
+                   "(loop for x in l
+      and z in y
+      do (print x)
+         (print z)
+      when (plusp x) do (print x) end
+      when (plusp x)
+        unless (plusp y)
+          do (print x)
+          and do (print y)
+        else
+          do (print z)
+      when (plusp x)
+        unless (plusp y)
+          do (print x)
+          and do (print y)
+        end
+      else
+        do (print z)
+      when (plusp x) do (print x) else do (print y)
+      if (zerop y)
+        do (print z)
+        and do (print w))")
 
                   #+(or :lucid symbolics)
                   ((ftest 55 0 '`(COND (,A . B) ,C (D .,E) ,.F ,@G (H I)))
@@ -2330,7 +2348,7 @@ B")
                   #+(or :lucid symbolics)
                   ((ftest 55 0 '``(,,X)) "``(,,X)")
 
-                  ((ftest 55 0 '`(,a ,b ,c) (*print-circle* t) (*print-shared* t)) "`(,A ,B ,C)")
+                  ((ftest 55 0 '`(,a ,b ,c) (*print-circle* t) (*print-shared* t)) "`(,a ,b ,c)")
                   
                   ;tests of things that only work on Symbolics machines.
 
@@ -2398,7 +2416,7 @@ B")
  2,
  2)-")
                   ((ftest 40 0 '(list (loop (car x))))
-                   "(LIST (LOOP (CAR X)))")
+                   "(list (loop (car x)))")
 
                   ))
 
