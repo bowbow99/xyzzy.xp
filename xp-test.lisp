@@ -1128,7 +1128,7 @@ tests
                   ((null nil) t)
 
                   ((plet 14 0 (progn (setq xp::*format-string-cache* t) (xp::format nil "~A" 4))) "4")
-                  ((plet 14 0 (xp::format nil "~10<foo~>" 4)) "       foo")
+                  ;((plet 14 0 (xp::format nil "~10<foo~>" 4)) "       foo")
                   ((plet 14 0 (xp::format nil "~@<foo~:>" 4)) "foo")
                   ((plet 14 0 (xp::format nil "~@<foo~:@>" 4)) "foo")
                   ((plet 14 0 (xp::format nil "~w" 4)) "4")
