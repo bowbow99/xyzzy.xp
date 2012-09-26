@@ -2917,7 +2917,7 @@
 (set-pprint-dispatch+ '(cons (member labels)) #'flet-print '(0) *IPD*)
 (set-pprint-dispatch+ '(cons (member lambda)) #'block-like '(0) *IPD*)
 (set-pprint-dispatch+ '(cons (member let)) #'let-print '(0) *IPD*)
-(set-pprint-dispatch+ '(cons (member let*)) #'let-print '(0) *IPD*)
+(set-pprint-dispatch+ '(cons (member lisp:let*)) #'let-print '(0) *IPD*) ; NOTE: `let*` is being shadowed.
 (set-pprint-dispatch+ '(cons (member locally)) #'block-like '(0) *IPD*)
 (set-pprint-dispatch+ '(cons (member loop)) #'pretty-loop '(0) *IPD*)
 (set-pprint-dispatch+ '(cons (member macrolet)) #'flet-print '(0) *IPD*)
