@@ -1551,37 +1551,48 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                   ((ftest 10 0 '(catch 'bar (foo x)))
                    "(catch 'bar
   (foo x))")
+                  #-xyzzy
                   ((ftest 20 0 '(ccase type (:foo (print 3))))
                    "(ccase type
   (:foo (print 3)))")
 
+                  #-xyzzy
                   ((ftest 100 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
                    "(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b))")
+                  #-xyzzy
                   ((ftest 50 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
                    "(compiler-let ((a (foo 3)) (b (foo 4)) (c 1))
   (tuz a b))")
+                  #-xyzzy
                   ((ftest 44 0 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
                    "(compiler-let ((a (foo 3))
                (b (foo 4))
                (c 1))
   (tuz a b))")
+                  #-xyzzy
                   ((ftest 44 50 '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1)) (tuz a b)))
                    "(compiler-let
  ((a (foo 3)) (b (foo 4)) (c 1))
  (tuz a b))")
+                  #-xyzzy
                   ((ftest 30 0 '(compiler-let (bar baz def gack gortch) (tuz a b)))
                    "(compiler-let (bar baz def
                gack gortch)
   (tuz a b))")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let ((bar baz def gack . gortch))))
                    "(compiler-let ((bar baz def gack
                 . gortch)))")
+                  #-xyzzy
                   ((ftest 100 0 '(compiler-let (bar baz def gack . gortch)))
                    "(compiler-let (bar baz def gack . gortch))")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let foo))
                    "(compiler-let foo)")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let ()))
                    "(compiler-let ())")
+                  #-xyzzy
                   ((ftest 40 0 '(compiler-let . foo))
                    "(compiler-let . foo)")
 
@@ -1611,6 +1622,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                   ((ftest 10 40 '(cond))
                    "(cond)")
 
+                  #-xyzzy
                   ((ftest 20 0 '(ctypecase type (:foo (print 3))))
                    "(ctypecase type
   (:foo (print 3)))")
@@ -1756,9 +1768,11 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                    "(dotimes (s list)
   (print s))")
 
+                  #-xyzzy
                   ((ftest 20 0 '(ecase type (:foo (print 3))))
                    "(ecase type
   (:foo (print 3)))")
+                  #-xyzzy
                   ((ftest 20 0 '(etypecase type (:foo (print 3))))
                    "(etypecase type
   (:foo (print 3)))")
@@ -1826,6 +1840,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
        (b (foo 4))
        (c 1))
   (tuz a b))")
+                  #-xyzzy
                   ((ftest 34 0 '(locally (declar (special x)) (print x)))
                    "(locally (declar (special x))
   (print x))")
@@ -1870,6 +1885,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                    "(prog* ((a 3) b c)
  L SS  (if (null b) c)
  long0 (car b))")
+                  #-xyzzy
                   ((ftest 25 0 '(progv (a b) (1 2) (car a)))
                    "(progv (a b) (1 2)
   (car a))")
@@ -1936,6 +1952,7 @@ is 3>---" "#---" "#<foo2 is 3>---"))
                   ((ftest 10 0 '(throw 'bar (foo x)))
                    "(throw 'bar
   (foo x))")
+                  #-xyzzy
                   ((ftest 20 0 '(typecase type (:foo (print 3))))
                    "(typecase type
   (:foo (print 3)))")
