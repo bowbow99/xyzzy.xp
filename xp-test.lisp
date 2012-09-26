@@ -1060,8 +1060,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2"
@@ -1091,8 +1091,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2"
@@ -1120,8 +1120,8 @@ tests" s)
 is is a test
 
 This is
-\(SETQ A B
-      C D)more
+\(setq a b
+      c d)more
 tests
 \"2\" a
 2-")
@@ -1147,13 +1147,13 @@ tests
                   ((with-output-to-string (*standard-output*) (xp::prin1 44 nil)) "44")
                   ((with-output-to-string (*terminal-io*) (xp::prin1 44 t)) "44")
 
-                  ((plet 100 0 (xp::princ-to-string '(setq a "2" b 8))) "(SETQ A 2 B 8)")
+                  ((plet 100 0 (xp::princ-to-string '(setq a "2" b 8))) "(setq a 2 b 8)")
                   ((plet 100 0
                      (let ((*print-pretty* nil))
-                       (xp::prin1-to-string '(setq a "2" b 8)))) "(SETQ A \"2\" B 8)")
+                       (xp::prin1-to-string '(setq a "2" b 8)))) "(setq a \"2\" b 8)")
                   ((plet 100 0 (xp::write-to-string '(setq a "2" b 8) :base 8 :right-margin 13))
-                   "(SETQ A \"2\"
-      B 10)")
+                   "(setq a \"2\"
+      b 10)")
 
                   (deftest
                    (progn (xp::defstruct foo (a 1) (b 2))
