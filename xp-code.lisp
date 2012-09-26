@@ -2422,7 +2422,7 @@
                         (t (list form))))
               body)))
   #+xyzzy
-  (setf (get 'fill-transform 'de:lisp-indent-hook) 'defun)
+  (setf (get 'fill-transform 'ed:lisp-indent-hook) 'defun)
 
   (defun fill-transform-char (char)
     (if (or (char= char #\SPC) (char= char #\TAB))
