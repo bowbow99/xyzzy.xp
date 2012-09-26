@@ -560,7 +560,7 @@ test a")
                   ((plet 16 0
                      (let ((*print-length* 2))
                        (xp::format nil (formatter "---~:@<~a~^ ~a~^ ~a~:>~A--") 12 3456 789)))
-                   "---(12 3456 ...)NIL--")
+                   "---(12 3456 ...)nil--")
 
                   ((plet 20 0 (xp::format nil (formatter "test~<a~2%  test~:>b") nil)) "testa
 
@@ -909,7 +909,7 @@ linebreaks"))
                   ((plet 10 0
                      (let ((*print-pretty* t))
                        (xp::format nil (formatter "~W") '#0Afoo)))
-                   "#0A FOO")
+                   "#0A foo")
                   ((plet 30 0
                      (let ((*print-pretty* t))
                        (string-upcase
@@ -1018,24 +1018,24 @@ linebreaks"))
                         (with-output-to-string (s)
                           (setq x (xp::write '(setq a 8 c "2") :stream s :base 8 :lines 4)))
                         x)))
-                   ("(SETQ A 10 C \"2\")" (setq a 8 c "2")))
+                   ("(setq a 10 c \"2\")" (setq a 8 c "2")))
                   ((plet 10 0
                      (let ((*print-pretty* nil))
                        (with-output-to-string (s)
                          (xp::write '(setq a 8 c "2") :stream s :escape nil :pretty t))))
-                   "(SETQ A 8
-      C 2)")
+                   "(setq a 8
+      c 2)")
                   (test-def ((defun bar1 (xp list &rest stuff) (declare (ignore stuff))
                                (xp::write list :stream xp :length 4 :pretty nil))
                              (plet 10 0
                                (xp::format nil (formatter "-~/bar1/-") '(setq a 8 c "2"))))
-                            "-(SETQ A 8 C ...)-")
+                            "-(setq a 8 c ...)-")
                   (test-def ((defun bar2 (xp list &rest stuff) (declare (ignore stuff))
                                (xp::write list :stream xp :length 4))
                              (plet 14 0
                                (xp::format nil (formatter "-~/bar2/-") '(setq a 8 c "2"))))
-                            "-(SETQ A 8
-       C ...)-")
+                            "-(setq a 8
+       c ...)-")
 
                   ((plet 10 0
                      (let ((*print-pretty* nil) x)
