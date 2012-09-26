@@ -391,6 +391,7 @@ test")
                    "tEst Test one test")
                   ((format-xps "tEst~:@( tesT ~S~) test" 'one)
                    "tEst TEST ONE test")
+                  #-xyzzy
                   ((plet 44 0 (xp::format nil (formatter "~:(~W~)")
                                           '(compiler-let ((a (foo 3)) (b (foo 4)) (c 1))
                                             (tuz a b))))
