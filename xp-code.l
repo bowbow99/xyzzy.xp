@@ -113,7 +113,6 @@
                                               (cons datum args)))))))))
 
 
-
 ;; [CLHS: Function WRITE-STRING, WRITE-LINE]: http://www.lispworks.com/documentation/HyperSpec/Body/f_wr_stg.htm
 (defun %write-string (string &optional stream &key (start 0) end)
   (unless (streamp stream)

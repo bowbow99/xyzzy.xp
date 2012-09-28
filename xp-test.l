@@ -81,7 +81,7 @@
 
 (defun do-test (n)
   (catch 'in-tester
-    (let* ((info (nth n test-list))
+    (xp::let* ((info (nth n test-list))
            (*package* (find-package :user))
            (*break-on-warnings* t)
            (tester (if (symbolp (car info)) (pop info) 'test-ordinary))
@@ -96,7 +96,7 @@
         (when (not (equal result value))
           (lisp:format t "~%form: ~S~% desired value ~S~%  actual value ~S~%"
                        form value result)
-          (error "failed test"))
+          (error "failed test: ~D" n))
         (when pop-if-no-failure
           (pop failed-tests))
         :ok))))  ;doesn't happen when abort out of error.
@@ -131,7 +131,7 @@
   (let ((format-xp-stuff
           (mapcar #'(lambda (a) (if (stringp a) `(formatter ,a) a)) stuff)))
     #+symbolics
-    `(let* ((format-value (lisp:format nil .,stuff))
+    `(xp::let* ((format-value (lisp:format nil .,stuff))
             (xp-value (xp::format nil .,format-xp-stuff)))
        (if (string= format-value xp-value) xp-value
          `(xp-format-output ,xp-value and
@@ -157,7 +157,7 @@
 
 (defmacro prints (thing &rest bindings)
   `(plet 50 0
-     (let* (,@ bindings
+     (xp::let* (,@ bindings
             (xp-result (xp::write-to-string ,thing))
             (normal-result (let ((*print-pretty* nil)) (lisp:write-to-string ,thing))))
        (if (not (string= xp-result normal-result))
@@ -166,7 +166,7 @@
 
 (defmacro print*s (thing &rest bindings)
   `(plet 50 0
-     (let* (,@ bindings
+     (xp::let* (,@ bindings
             (xp-result (xp::write-to-string ,thing))
             (normal-result (lisp:write-to-string ,thing)))
        (if (string= xp-result normal-result) normal-result
@@ -176,12 +176,12 @@
 (defmacro print*c (thing &rest bindings)
   (push '(*print-circle* t) bindings)
   `(plet 150 0
-     (let* ,bindings (write-to-string (read-from-string ,thing)))))
+     (xp::let* ,bindings (write-to-string (read-from-string ,thing)))))
 
 (defmacro format*c (string thing &rest bindings)
   (push '(*print-circle* t) bindings)
   `(plet 150 0
-     (let* ,bindings
+     (xp::let* ,bindings
        (xp::format nil ,string (read-from-string ,thing)))))
 
 (defmacro ftest (width miser form &rest bindings)
