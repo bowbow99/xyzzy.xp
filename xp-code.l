@@ -815,7 +815,7 @@
 ;primitives for it.  There is a tiny probability here that two different
 ;processes could end up trying to use the same xp-stream)
 
-(defvar *free-xps* nil "free list of XP stream objects") ; never bound
+(defparameter *free-xps* nil "free list of XP stream objects") ; never bound
 
 (defun get-pretty-print-stream (stream)
   (let ((xp (pop *free-xps*)))
