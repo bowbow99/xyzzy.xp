@@ -10,6 +10,10 @@
 
 (defconstant *base-dir* (directory-namestring *load-pathname*))
 
+(defparameter *xp-code-src* "xp-code.l")
+(defparameter *xp-code-fasl* "xp-code.lc")
+(defparameter *xp-test* "xp-test.l")
+
 
 (defmacro with-output-to-error-log (&body body)
   `(let ((#1=#:buffer (get-buffer-create "*Test Errors*")))
@@ -36,8 +40,8 @@
 (defun load-xp (&optional compile)
   (when (find-package :xp)
     (remove-xp))
-  (let ((src  (merge-pathnames "xp-code.lisp" *base-dir*))
-        (fasl (merge-pathnames "xp-code.lisp.lc" *base-dir*)))
+  (let ((src  (merge-pathnames *xp-code-src* *base-dir*))
+        (fasl (merge-pathnames *xp-code-fasl* *base-dir*)))
     (when compile
       (compile-file src))
     (load (cond ((file-exist-p fasl) fasl)
@@ -47,7 +51,7 @@
 (defun test-xp (&optional n)
   (unless (find-package :xp)
     (load-xp))
-  (load (merge-pathnames "xp-test.lisp" *base-dir*))
+  (load (merge-pathnames *xp-test* *base-dir*))
   (with-open-stream (elog (error-log-stream t))
     (let ((debug-info-def
             (get (find-symbol "debug-info" :xp) 'si:structure-definition))
@@ -77,10 +81,10 @@
 
 
 (defun *load-xp (&optional (run-test t))
-  (load (merge-pathnames "xp-code.lisp" *base-dir*))
+  (load (merge-pathnames *xp-code-fasl* *base-dir*))
   (funcall (find-symbol "install" :xp))
   (when run-test
-    (load (merge-pathnames "xp-test.lisp" *base-dir*))
+    (load (merge-pathnames *xp-test* *base-dir*))
     (with-interval-message (400)
       (with-open-stream (error-log (error-log-stream))
         (let ((debug-info-def
