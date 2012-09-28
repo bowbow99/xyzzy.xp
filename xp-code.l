@@ -2685,15 +2685,15 @@
 
 (defun token-type (token &aux string)
   (cond ((not (symbolp token)) :expr)
-        ((string= (setq string (string token)) "FINALLY") :finally)
-        ((member string '("IF" "WHEN" "UNLESS") :test #'string=) :cond-head)
-        ((member string '("DO" "DOING" "INITIALLY") :test #'string=) :linear-head)
-        ((member string '("FOR" "AS" "WITH" "AND" "END" "ELSE"
-                          "REPEAT" "NAMED" "WHILE" "UNTIL" "ALWAYS" "NEVER"
-                          "THEREIS" "RETURN" "COLLECT" "COLLECTING" "APPEND"
-                          "APPENDING" "NCONC" "NCONCING" "COUNT" "COUNTING"
-                          "SUM" "SUMMING" "MAXIMIZE" "MAXIMIZING"
-                          "MINIMIZE" "MINIMIZING")
+        ((string= (setq string (string token)) "finally") :finally)
+        ((member string '("if" "when" "unless") :test #'string=) :cond-head)
+        ((member string '("do" "doing" "initially") :test #'string=) :linear-head)
+        ((member string '("for" "as" "with" "and" "end" "else"
+                          "repeat" "named" "while" "until" "always" "never"
+                          "thereis" "return" "collect" "collecting" "append"
+                          "appending" "nconc" "nconcing" "count" "counting"
+                          "sum" "summing" "maximize" "maximizing"
+                          "minimize" "minimizing")
                  :test #'string=)
           :block-head)
         (t :expr)))
@@ -2745,18 +2745,18 @@
                        (print-clause xp)
                        (print-and-list xp)
                        (when (and (symbolp token)
-                                  (string= (string token) "ELSE"))
+                                  (string= (string token) "else"))
                          (print-else-or-end xp)
                          (write-char #\SPC xp)
                          (pprint-newline :linear xp)
                          (print-clause xp)
                          (print-and-list xp))
                        (when (and (symbolp token)
-                                  (string= (string token) "END"))
+                                  (string= (string token) "end"))
                          (print-else-or-end xp)))))
                  (print-and-list (xp)
                    (loop (when (not (and (symbolp token)
-                                         (string= (string token) "AND")))
+                                         (string= (string token) "and")))
                            (return nil))
                      (write-char #\SPC xp)
                      (pprint-newline :mandatory xp)
