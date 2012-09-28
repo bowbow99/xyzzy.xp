@@ -36,7 +36,8 @@ Bugs etc.
 とりあえずわかってる範囲で
 
 しんどそうなの
-- array の出力がおかしい
+- <del>array の出力がおかしい</del>
+  - おかしかったのはテストの方だった
 - justification は相変わらず使えない
 - printer control variable をちゃんと見てないことがある
   - `*print-escape*`
@@ -53,7 +54,7 @@ Bugs etc.
 - 循環の検出あたりがあやしい？
 
 カンタンなの
-- 拡張 loop のキーワードが大文字のまま
+- <del>拡張 loop のキーワードが大文字のまま</del> done.
 - 拡張 loop のキーワードが足りてない
   - hash-table とか package あたりの
 
@@ -64,6 +65,4 @@ Bugs etc.
 その他メモ
 ----------
 できたら ansify に突っ込む予定
-
-xpx-{code,test}.lisp は見てもいない。
 
