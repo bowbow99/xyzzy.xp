@@ -7,7 +7,7 @@ origin: [Package: lang/lisp/code/io/xp/][1]
 
 Status: 作業中
 --------------
-`xp-code.lisp` を（コンパイルして）読み込んで `(xp::install)` すれば一応
+`xp-code.l` を（コンパイルして）読み込んで `(xp::install)` すれば一応
 動いてるっぽい。
 
 ~~~lisp
