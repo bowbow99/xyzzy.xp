@@ -80,36 +80,3 @@
                 (do-events)))))))))
 
 
-(defun *load-xp (&optional (run-test t))
-  (load (merge-pathnames *xp-code-fasl* *base-dir*))
-  (funcall (find-symbol "install" :xp))
-  (when run-test
-    (load (merge-pathnames *xp-test* *base-dir*))
-    (with-interval-message (400)
-      (with-open-stream (error-log (error-log-stream))
-        (let ((debug-info-def
-                (get (find-symbol "debug-info" :xp) 'si:structure-definition))
-              (failure-def
-                (get (find-symbol "failure" :user) 'si:structure-definition)))
-          (handler-bind ((condition
-                          (lambda (x)
-                            (let ((def (si:*structure-definition x)))
-                              (cond ((eq def debug-info-def)
-                                      (let ((msg (split-string (lisp:princ-to-string x) #\LFD)))
-                                        (lisp:format error-log "~&Debug> ~A~%~{~7T ~A~%~}"
-                                                     (first msg) (rest msg))))
-                                    ((eq def failure-def)
-                                      (lisp:format error-log "~&Failure: ~A~%" x)))))))
-            (handler-case
-                (funcall (find-symbol "do-tests" :user))
-              (error ()
-                (loop
-                  (do-events)
-                  (handler-case
-                      (progn
-                        (funcall (find-symbol "more" :user))
-                        (return (values)))
-                    (error (err)
-                      (lisp:format error-log "~&ERROR: ~A" err)
-                      (message "Error: ~A" err))))))))))))
-
