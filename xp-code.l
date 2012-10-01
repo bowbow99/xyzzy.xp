@@ -270,7 +270,13 @@
   ;;
   ;; return window-width for buffer-stream?
   (defun output-width (&optional (s *standard-output*))
-    nil)
+    (ignore-errors
+     (cond ((ed:buffer-stream-p s)
+             (let* ((buffer (ed:buffer-stream-buffer s))
+                    (window (ed:get-buffer-window buffer)))
+               (when window
+                 (ed:window-width window))))
+           (t nil))))
 
   ;; NOTE: This function is used to initialize XP stream's slot "charpos".
   ;; The slot is supposed to hold current position in a buffer, and buffer
