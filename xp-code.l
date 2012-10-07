@@ -71,7 +71,7 @@
   (shadow '(write print prin1 princ pprint format write-to-string princ-to-string
             prin1-to-string write-line write-string write-char terpri fresh-line
             defstruct finish-output
-            ;force-output clear-output
+            force-output clear-output
             ))
 
   (export '(formatter copy-pprint-dispatch pprint-dispatch
@@ -87,7 +87,7 @@
   '(write print prin1 princ pprint format write-to-string princ-to-string
     prin1-to-string write-line write-string write-char terpri fresh-line
     defstruct finish-output
-    ;force-output clear-output
+    force-output clear-output
     )
   "printing functions redefined by xp.")
 
@@ -1547,23 +1547,23 @@
 ;;
 ;;   [CLHS: Function FINISH-OUTPUT, FORCE-OUTPUT, CLEAR-OUTPUT]: http://www.lispworks.com/documentation/HyperSpec/Body/f_finish.htm
 
-#-xyzzy
+;#-xyzzy
 (defun force-output (&optional (stream *standard-output*))
   (setq stream (decode-stream-arg stream))
   (when (xp-structure-p stream)
     (attempt-to-output stream t t)
     (setq stream (base-stream stream)))
-  (lisp:force-output stream)
+  ;(lisp:force-output stream)
   nil)
 
-#-xyzzy
+;#-xyzzy
 (defun clear-output (&optional (stream *standard-output*))
   (setq stream (decode-stream-arg stream))
   (when (xp-structure-p stream)
     (let ((*locating-circularities* 0)) ;hack to prevent visible output
       (attempt-to-output stream t t)
       (setq stream (base-stream stream))))
-  (lisp:clear-output stream)
+  ;(lisp:clear-output stream)
   nil)
 
 ;note we are assuming that if a structure is defined using xp::defstruct,
