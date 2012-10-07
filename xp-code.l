@@ -2537,6 +2537,25 @@
   (if (> (length (symbol-name (car list))) 12)
       (funcall (formatter "~:<~1I~@{~W~^ ~_~}~:>") xp list)
       (funcall (formatter "~:<~W~^ ~:I~@_~@{~W~^ ~_~}~:>") xp list)))
+
+(defun %macro-nargs-before-body (operator)
+  (let ((macro (macro-function operator)))
+    (when macro
+      (let ((arglist (second macro)))
+        ;; FIXME: take care of &environment and &whole
+        (position '&body arglist)))))
+
+(defun macro-or-fn-call (xp list)
+  (let ((nargs-before-body
+          (when (symbolp (car list))
+            (%macro-nargs-before-body (car list)))))
+    (if nargs-before-body
+      (funcall (formatter "~:<~3I~V@{~W~^ ~:_~}~1I~@{~W~^ ~_~}~:>")
+               xp (cons nargs-before-body list))
+      (funcall (formatter "~:<~W~^ ~:I~@_~@{~W~^ ~_~}~:>") xp list))))
+
+(setf (symbol-function 'fn-call) #'macro-or-fn-call)
+
 
 (defun bind-list (xp list &rest args)
     (declare (ignore args))
